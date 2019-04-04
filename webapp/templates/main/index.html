@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h3>系统调试页面</h3>
+<p>当前用户:{{ current_user.username }}</p>
+<p>当前is_authenticated {{ current_user.is_authenticated }}</p>
+<p>当前active {{ current_user.is_active }}</p>
+<p>当前anonyous {{ current_user.is_anonymous }}</p>
+<p>当前fresh：{{ fresh }}</p>
+<p>id {{ current_user.get_id() }}</p>
+
+
+</body>
+</html>

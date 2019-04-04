@@ -1,0 +1,510 @@
+{% extends "base.html" %}
+{% block pagetitle %}
+    <div class="page-title-alt-bg"></div>
+    <div class="page-title-box">
+        <ol class="breadcrumb float-right">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">按行业/地域/概念分类浏览股票行情。</a></li>
+            {#            <li class="breadcrumb-item"><a href="javascript:void(0);">场内动态全景</a></li>#}
+        </ol>
+        <h4 class="page-title">数据中心：行情信息</h4>
+    </div>
+{% endblock %}
+{% block css %}
+    <style type="text/css">
+        #datatable.table > thead > tr > th {
+            text-align: center;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-4">
+            <ul class="nav nav-pills navtab-bg nav-justified">
+                <li class="nav-item" id="button_industry">
+                    <a href="#home1" data-toggle="tab" aria-expanded="false" class="nav-link  active"><i
+                            class="mdi mdi-view-list"></i> 行业分类</a>
+                </li>
+                <li class="nav-item" id="button_region">
+                    <a href="#profile1" data-toggle="tab" aria-expanded="true" class="nav-link"><i
+                            class="mdi mdi-view-list"></i> 地域板块</a>
+                </li>
+                <li class="nav-item" id="button_concept">
+                    <a href="#messages1" data-toggle="tab" aria-expanded="false" class="nav-link"><i
+                            class="mdi mdi-view-list"></i> 概念板块</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane" id="home1"></div>
+                <div class="tab-pane show active" id="profile1"></div>
+                <div class="tab-pane" id="messages1"></div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-11">
+            <div class="button-list" id="industry_list">
+            </div>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 30px">
+        <div class="col-1"></div>
+        <div class="col-8" style="font-size:large;font-weight: bold">
+            <i class="mdi mdi-near-me"></i><a id="title_type"></a><a id="industry"></a><a id="time" style="color: red">(2018/09/30)</a>
+        </div>
+        <div class="col-3">
+            <ul class="nav nav-pills navtab-bg nav-justified">
+                <li class="nav-item">
+                    <a href="#home1" data-toggle="tab" aria-expanded="false" class="nav-link  active"><i
+                            class="mdi mdi-circle-outline"></i> 行情信息</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#profile1" data-toggle="tab" aria-expanded="true" class="nav-link"><i
+                            class="mdi mdi-circle-outline"></i> 财务信息</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 20px">
+        <div class="col-1"></div>
+        <div class="col-11">
+            <table id="datatable" class="table table-bordered dt-responsive">
+                <thead>
+                <tr>
+                    <th>代码</th>
+                    <th style='width: 50px'>名称</th>
+                    <th>涨幅%</th>
+                    <th>现价</th>
+                    <th>今开</th>
+                    <th>最高</th>
+                    <th>最低</th>
+                    <th>昨收</th>
+                    <th>换手%</th>
+                    <th>成交量</th>
+                    <th>成交额</th>
+                    <th>流通值</th>
+                    <th>市盈率</th>
+                    <th>市净率</th>
+                    <th>综合分</th>
+                </tr>
+                </thead>
+                <tbody id="tb"></tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static',filename='libs/sparkline/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='libs/echarts/echarts.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#title_type").text("行业分类 > > ");
+            $.ajax({
+                type: 'GET',
+                url: '{{url_for("industry_analysis.api_get_all_industry")}}',
+                data: {},
+                dataType: 'json',
+                success: function (data_1) {
+                    var current_industry = data_1[0];
+                    $("#industry").text(current_industry);
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_get_industry_stock_market_data")}}',
+                        data: {
+                            industry: current_industry
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            for (var i in data) {
+                                console.log(i);
+                                var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                $("#tb").append(tr);
+                            }
+                            $('#datatable').DataTable({
+                                "searching": true,
+                                "info": true,
+                                "retrieve": true,
+                                "oLanguage": {
+                                    "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                    "sSearch": "搜索：",
+                                    "sZeroRecords": "抱歉， 没有找到",
+                                    "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                    "sInfoEmpty": "没有数据",
+                                    "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                    "oPaginate": {
+                                        "sFirst": "首页",
+                                        "sPrevious": "前一页",
+                                        "sNext": "后一页",
+                                        "sLast": "尾页"
+                                    },
+                                }
+                            })
+                        }
+                    });
+                    for (var i in data_1) {
+                        var bt = document.createElement("button");
+                        var bt_class = 'btn btn-outline-primary w-md';
+                        bt.innerHTML = data_1[i];
+                        bt.setAttribute("class", bt_class);
+                        bt.onclick = function (params) {                          //绑定点击事件
+                            current_industry = params.currentTarget['innerHTML'];
+                            $("#industry").text(current_industry);
+                            $("#tb").html('');
+                            if ($('#datatable').hasClass('dataTable')) {
+                                dttable = $('#datatable').dataTable();
+                                dttable.fnClearTable();
+                                dttable.fnDestroy(); //还原初始化了的datatable
+                            }
+                            $.ajax({
+                                type: 'GET',
+                                url: '{{url_for("industry_analysis.api_get_industry_stock_market_data")}}',
+                                data: {
+                                    industry: current_industry
+                                },
+                                dataType: 'json',
+                                success: function (data) {
+                                    for (var i in data) {
+                                        var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                        $("#tb").append(tr);
+                                    }
+                                    $('#datatable').DataTable({
+                                        "searching": true,
+                                        "info": true,
+                                        "retrieve": true,
+                                        "oLanguage": {
+                                            "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                            "sSearch": "搜索：",
+                                            "sZeroRecords": "抱歉， 没有找到",
+                                            "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                            "sInfoEmpty": "没有数据",
+                                            "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                            "oPaginate": {
+                                                "sFirst": "首页",
+                                                "sPrevious": "前一页",
+                                                "sNext": "后一页",
+                                                "sLast": "尾页"
+                                            },
+                                        }
+                                    })
+                                }
+                            })
+                        };
+                        $('#industry_list').append(bt);
+                    }
+                }
+            });
+            $("#button_region").click(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url_for("industry_analysis.api_get_all_region")}}',
+                    data: {},
+                    dataType: 'json',
+                    success: function (data_1) {
+                        $('#industry_list').html("");
+                        $("#title_type").text("地域分类 > > ");
+                        var current_region = data_1[0];
+                        $("#industry").text(current_region);
+                        $("#tb").html('');
+                        if ($('#datatable').hasClass('dataTable')) {
+                            dttable = $('#datatable').dataTable();
+                            dttable.fnClearTable();
+                            dttable.fnDestroy(); //还原初始化了的datatable
+                        }
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_get_region_stock_market_data")}}',
+                            data: {
+                                region: current_region
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                for (var i in data) {
+                                    var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                    $("#tb").append(tr);
+                                }
+                                $('#datatable').DataTable({
+                                    "searching": true,
+                                    "info": true,
+                                    "retrieve": true,
+                                    "oLanguage": {
+                                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                        "sSearch": "搜索：",
+                                        "sZeroRecords": "抱歉， 没有找到",
+                                        "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                        "sInfoEmpty": "没有数据",
+                                        "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                        "oPaginate": {
+                                            "sFirst": "首页",
+                                            "sPrevious": "前一页",
+                                            "sNext": "后一页",
+                                            "sLast": "尾页"
+                                        },
+                                    }
+                                })
+                            }
+                        });
+                        for (var i in data_1) {
+                            var bt = document.createElement("button");
+                            var bt_class = 'btn btn-outline-primary w-md';
+                            bt.innerHTML = data_1[i];
+                            bt.setAttribute("class", bt_class);
+                            bt.onclick = function (params) {                          //绑定点击事件
+                                current_region = params.currentTarget['innerHTML'];
+                                $("#industry").text(current_region);
+                                $("#tb").html('');
+                                if ($('#datatable').hasClass('dataTable')) {
+                                    dttable = $('#datatable').dataTable();
+                                    dttable.fnClearTable();
+                                    dttable.fnDestroy(); //还原初始化了的datatable
+                                }
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '{{url_for("industry_analysis.api_get_region_stock_market_data")}}',
+                                    data: {
+                                        region: current_region
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        for (var i in data) {
+                                            var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                            $("#tb").append(tr);
+                                        }
+                                        $('#datatable').DataTable({
+                                            "searching": true,
+                                            "info": true,
+                                            "retrieve": true,
+                                            "oLanguage": {
+                                                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                                "sSearch": "搜索：",
+                                                "sZeroRecords": "抱歉， 没有找到",
+                                                "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                                "sInfoEmpty": "没有数据",
+                                                "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                                "oPaginate": {
+                                                    "sFirst": "首页",
+                                                    "sPrevious": "前一页",
+                                                    "sNext": "后一页",
+                                                    "sLast": "尾页"
+                                                },
+                                            }
+                                        })
+                                    }
+                                })
+                            };
+                            $('#industry_list').append(bt);
+                        }
+                    }
+                });
+            });
+            $("#button_industry").click(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url_for("industry_analysis.api_get_all_industry")}}',
+                    data: {},
+                    dataType: 'json',
+                    success: function (data_1) {
+                        $('#industry_list').html("");
+                        $("#title_type").text("行业分类 > > ");
+                        var current_industry_1 = data_1[0];
+                        $("#industry").text(current_industry_1);
+                        $("#tb").html('');
+                        if ($('#datatable').hasClass('dataTable')) {
+                            dttable = $('#datatable').dataTable();
+                            dttable.fnClearTable();
+                            dttable.fnDestroy(); //还原初始化了的datatable
+                        }
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_get_industry_stock_market_data")}}',
+                            data: {
+                                industry: current_industry_1
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                for (var i in data) {
+                                    var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                    $("#tb").append(tr);
+                                }
+                                $('#datatable').DataTable({
+                                    "searching": true,
+                                    "info": true,
+                                    "retrieve": true,
+                                    "oLanguage": {
+                                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                        "sSearch": "搜索：",
+                                        "sZeroRecords": "抱歉， 没有找到",
+                                        "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                        "sInfoEmpty": "没有数据",
+                                        "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                        "oPaginate": {
+                                            "sFirst": "首页",
+                                            "sPrevious": "前一页",
+                                            "sNext": "后一页",
+                                            "sLast": "尾页"
+                                        },
+                                    }
+                                })
+                            }
+                        });
+                        for (var i in data_1) {
+                            var bt = document.createElement("button");
+                            var bt_class = 'btn btn-outline-primary w-md';
+                            bt.innerHTML = data_1[i];
+                            bt.setAttribute("class", bt_class);
+                            bt.onclick = function (params) {                          //绑定点击事件
+                                current_industry_1 = params.currentTarget['innerHTML'];
+                                $("#industry").text(current_industry_1);
+                                $("#tb").html('');
+                                if ($('#datatable').hasClass('dataTable')) {
+                                    dttable = $('#datatable').dataTable();
+                                    dttable.fnClearTable();
+                                    dttable.fnDestroy(); //还原初始化了的datatable
+                                }
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '{{url_for("industry_analysis.api_get_industry_stock_market_data")}}',
+                                    data: {
+                                        industry: current_industry_1
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        for (var i in data) {
+                                            var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                            $("#tb").append(tr);
+                                        }
+                                        $('#datatable').DataTable({
+                                            "searching": true,
+                                            "info": true,
+                                            "retrieve": true,
+                                            "oLanguage": {
+                                                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                                "sSearch": "搜索：",
+                                                "sZeroRecords": "抱歉， 没有找到",
+                                                "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                                "sInfoEmpty": "没有数据",
+                                                "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                                "oPaginate": {
+                                                    "sFirst": "首页",
+                                                    "sPrevious": "前一页",
+                                                    "sNext": "后一页",
+                                                    "sLast": "尾页"
+                                                },
+                                            }
+                                        })
+                                    }
+                                })
+                            };
+                            $('#industry_list').append(bt);
+                        }
+                    }
+                });
+            });
+            $("#button_concept").click(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '{{url_for("industry_analysis.api_get_all_concept")}}',
+                    data: {},
+                    dataType: 'json',
+                    success: function (data_1) {
+                        $('#industry_list').html("");
+                        $("#title_type").text("概念板块 > > ");
+                        var current_concept = data_1[0];
+                        $("#industry").text(current_concept);
+                        $("#tb").html('');
+                        if ($('#datatable').hasClass('dataTable')) {
+                            dttable = $('#datatable').dataTable();
+                            dttable.fnClearTable();
+                            dttable.fnDestroy(); //还原初始化了的datatable
+                        }
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_get_concept_stock_market_data")}}',
+                            data: {
+                                concept: current_concept
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                for (var i in data) {
+                                    var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                    $("#tb").append(tr);
+                                }
+                                $('#datatable').DataTable({
+                                    "searching": true,
+                                    "info": true,
+                                    "retrieve": true,
+                                    "oLanguage": {
+                                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                        "sSearch": "搜索：",
+                                        "sZeroRecords": "抱歉， 没有找到",
+                                        "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                        "sInfoEmpty": "没有数据",
+                                        "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                        "oPaginate": {
+                                            "sFirst": "首页",
+                                            "sPrevious": "前一页",
+                                            "sNext": "后一页",
+                                            "sLast": "尾页"
+                                        },
+                                    }
+                                })
+                            }
+                        });
+                        for (var i in data_1) {
+                            var bt = document.createElement("button");
+                            var bt_class = 'btn btn-outline-primary w-md';
+                            bt.innerHTML = data_1[i];
+                            bt.setAttribute("class", bt_class);
+                            bt.onclick = function (params) {                          //绑定点击事件
+                                current_region = params.currentTarget['innerHTML'];
+                                $("#industry").text(current_region);
+                                $("#tb").html('');
+                                if ($('#datatable').hasClass('dataTable')) {
+                                    dttable = $('#datatable').dataTable();
+                                    dttable.fnClearTable();
+                                    dttable.fnDestroy(); //还原初始化了的datatable
+                                }
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '{{url_for("industry_analysis.api_get_concept_stock_market_data")}}',
+                                    data: {
+                                        concept: current_concept
+                                    },
+                                    dataType: 'json',
+                                    success: function (data) {
+                                        for (var i in data) {
+                                            var tr = "<tr style = 'color:" + data[i]['color'] + "'><td>" + i + "</td><td>" + data[i]['ts_name'] + "</td><td>" + data[i]['pct_change'] + "</td><td>" + data[i]['current'] + "</td><td>" + data[i]['open'] + "</td><td>" + data[i]['high'] + "</td><td>" + data[i]['low'] + "</td><td>" + data[i]['pre_close'] + "</td><td>" + data[i]['turnover_rate'] + "</td><td>" + data[i]['vol'] + "</td><td>" + data[i]['amount'] + "</td><td>" + data[i]['cir_value'] + "</td><td>" + data[i]['pe_ttm'] + "</td><td>" + data[i]['pb'] + "</td><td>" + data[i]['score'] + "</td></tr>";
+                                            $("#tb").append(tr);
+                                        }
+                                        $('#datatable').DataTable({
+                                            "searching": true,
+                                            "info": true,
+                                            "retrieve": true,
+                                            "oLanguage": {
+                                                "sLengthMenu": "每页显示 _MENU_ 条记录",
+                                                "sSearch": "搜索：",
+                                                "sZeroRecords": "抱歉， 没有找到",
+                                                "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                                                "sInfoEmpty": "没有数据",
+                                                "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                                                "oPaginate": {
+                                                    "sFirst": "首页",
+                                                    "sPrevious": "前一页",
+                                                    "sNext": "后一页",
+                                                    "sLast": "尾页"
+                                                },
+                                            }
+                                        })
+                                    }
+                                })
+                            };
+                            $('#industry_list').append(bt);
+                        }
+
+                    }
+                });
+            })
+        });
+    </script>
+{% endblock %}

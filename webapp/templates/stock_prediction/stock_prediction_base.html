@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block pagetitle %}
+    <div class="page-title-alt-bg"></div>
+    <div class="page-title-box">
+        <ol class="breadcrumb float-right">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">数据分析</a></li>
+            <li class="breadcrumb-item"><a href="javascript:void(0);">股票分析</a></li>
+            <li class="breadcrumb-item active">{{ stock.ts_code }}</li>
+        </ol>
+        <h4 class="page-title">{{ stock.name }}（{{ stock.ts_code }}）</h4>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-box">
+                <h4 class="header-title m-t-0 m-b-30">分析项目</h4>
+
+                <ul class="nav nav-pills navtab-bg nav-justified" id="stock_prediction_navigation">
+                    <li class="nav-item">
+                        <a href="{{ url_for('stock_prediction.comprehensive_analysis',code=stock.ts_code) }}"
+                           aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-bell" style="font-size: 25px"></i><br/>综合研判
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('stock_prediction.trend_prediction',code=stock.ts_code) }}" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-graph-line" style="font-size: 25px"></i><br/>走势预测
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-meter" style="font-size: 25px"></i><br/>股票估值
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-retweet" style="font-size: 25px"></i><br/>资金流向
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-anchor" style="font-size: 25px"></i><br/>筹码分布
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-to-do" style="font-size: 25px"></i><br/>规则统计
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('stock_prediction.trend_prediction') }}" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-preview" style="font-size: 25px"></i><br/>全局指南
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-graph-pie" style="font-size: 25px"></i><br/>财务指标
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-conversation" style="font-size: 25px"></i><br/>公告新闻
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-graduation" style="font-size: 25px"></i><br/>研报评级
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-document" style="font-size: 25px"></i><br/>基础数据
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-help" style="font-size: 25px"></i><br/>股吧聚合
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link" style="padding: 8px">
+                            <i class="dripicons-paperclip" style="font-size: 25px"></i><br/>行为分析
+                        </a>
+                    </li>
+                </ul>
+            </div> <!-- end card-box-->
+        </div>
+    </div>
+    {% block page_container %}
+    {% endblock %}
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static',filename='assets/js/stock_prediction/jquery.stock_prediction_base.js') }}"></script>
+    <script>
+        var stock = "{{ stock.ts_code }}";
+        var date = "{{ date }}"
+    </script>
+    {% block page_scripts %}
+    {% endblock %}
+{% endblock %}

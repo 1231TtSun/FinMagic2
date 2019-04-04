@@ -1,0 +1,118 @@
+{% extends "main/main_base.html" %}
+{% block styles %}
+    <!-- Toastr css -->
+    <link href="{{ url_for('static',filename='libs/jquery-toast-plugin/jquery.toast.min.css') }}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <!-- Login -->
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="wrapper-page">
+                        <div class="account-pages">
+                            <div class="account-box">
+
+                                <!-- Logo box-->
+                                <div class="account-logo-box">
+                                    <h2 class="text-uppercase text-center">
+                                        <a href="{{ url_for("main.index") }}" class="text-success">
+                                            <span><img src="{{ url_for('static',filename='images/logo_dark.png') }}"
+                                                       alt="" height="28"></span>
+                                        </a>
+                                    </h2>
+                                </div>
+
+                                <div class="account-content">
+                                    <form action="{{ url_for("main.api_login") }}{{ args }}" method="post" id="loginform">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="form-group mb-3">
+                                            <label for="emailaddress" class="font-weight-medium">邮箱地址</label>
+                                            <input class="form-control" type="email" name="emailaddress"
+                                                   id="emailaddress" required="required" placeholder="输入注册邮箱">
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="password" class="font-weight-medium">密码</label>
+                                            <input class="form-control" type="password" required="required" name="password"
+                                                   id="password" placeholder="输入密码">
+                                            <a href="{{ url_for("main.recoverpassword") }}"
+                                               class="text-muted float-right">
+                                                <small>忘记密码？</small>
+                                            </a>
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <div class="checkbox checkbox-info">
+                                                <input name="remember" id="remember" type="checkbox">
+                                                <label for="remember">
+                                                    记住我
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row text-center">
+                                            <div class="col-12">
+                                                <button class="btn btn-block btn-success waves-effect waves-light"
+                                                        type="button" onclick="checkLogin();">登录
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form> <!-- end form -->
+
+                                    <div class="row mt-3">
+                                        <div class="col-12 text-center">
+                                            <p class="text-muted">还没有账号？ <a href="{{ url_for("main.register") }}"
+                                                                            class="text-dark m-l-5"><b>注册</b></a></p>
+                                        </div>
+                                    </div> <!-- end row-->
+                                </div> <!-- end account-content -->
+
+                            </div> <!-- end account-box -->
+                        </div>
+                        <!-- end account-page-->
+                    </div>
+                    <!-- end wrapper-page -->
+
+                </div> <!-- end col -->
+            </div> <!-- end row -->
+        </div> <!-- end container -->
+    </section>
+    <!-- END Login -->
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static',filename='libs/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.toastr.js') }}"></script>
+    <script>
+        var csrftoken = "{{ csrf_token() }}"
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        });
+        function checkLogin() {
+            var email = document.getElementById("emailaddress")
+            var pwd = document.getElementById("password")
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('main.api_checklogin') }}",
+                data: {emailaddress: email.value, password: pwd.value},
+                dataType: "json",
+                success: function (r) {
+                    if (r.status == "success") {
+                        $.NotificationApp.send("登录成功!", "正在为您跳转……", 'top-right', '#5ba035', 'success');
+                        setTimeout(function () {
+                            $("#loginform").submit()
+                        },2000)
+                    } else {
+                        $.NotificationApp.send("登录失败!", r.reason, 'top-right', '#bf441d', 'error');
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}
+

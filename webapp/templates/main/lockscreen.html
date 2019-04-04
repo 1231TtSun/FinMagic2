@@ -1,0 +1,101 @@
+{% extends "main/main_base.html" %}
+{% block styles %}
+    <!-- Toastr css -->
+    <link href="{{ url_for('static',filename='libs/jquery-toast-plugin/jquery.toast.min.css') }}" rel="stylesheet"/>
+{% endblock %}
+{% block content %}
+    <!-- HOME -->
+    <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+
+                        <div class="wrapper-page">
+                            <div class="account-pages">
+                                <div class="account-box">
+
+                                    <!-- Logo box -->
+                                    <div class="account-logo-box">
+                                        <h2 class="text-uppercase text-center">
+                                            <a href="{{ url_for('main.index') }}" class="text-success">
+                                                <span><img src="{{ url_for('static',filename='images/logo_dark.png') }}" alt="" height="28"></span>
+                                            </a>
+                                        </h2>
+                                    </div>
+
+                                    <div class="account-content">
+                                        <div class="text-center">
+                                            <div class="mb-2">
+                                                <img src="{{ url_for("static",filename="images/users/") }}avatar-1.jpg" class="rounded-circle img-thumbnail thumb-lg" alt="thumbnail">
+                                            </div>
+
+                                            <p class="text-muted mb-4 font-13">请输入密码</p>
+                                        </div> <!-- end text-center-->
+
+                                        <form class="form-horizontal" action="{{ url_for('main.api_lockscreen') }}{{ args }}" method="post" id="lockscreenform">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <div class="form-group mb-3">
+                                                <label for="password" class="font-weight-medium">密码</label>
+                                                <input class="form-control" type="password" required="required" name="password" id="password" placeholder="请输入密码">
+                                            </div>
+
+                                            <div class="form-group row text-center">
+                                                <div class="col-12">
+                                                    <button class="btn btn-block btn-success waves-effect waves-light" type="button" onclick="checkLockscreen()">登录</button>
+                                                </div>
+                                            </div>
+                                        </form> <!-- end form -->
+
+                                        <div class="row mt-3">
+                                            <div class="col-12 text-center">
+                                                <p class="text-muted">不是我？ 请<a href="{{ url_for('main.logout') }}" class="text-dark m-l-5"><b>退出</b></a>后重新登录</p>
+                                            </div>
+                                        </div> <!-- end row -->
+
+                                    </div> <!-- end account-content -->
+
+                                </div> <!-- end account-box -->
+                            </div>
+                            <!-- end account-page-->
+                        </div>
+                        <!-- end wrapper-page -->
+
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div> <!-- end container -->
+        </section>
+    <!-- END HOME -->
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static',filename='libs/jquery-toast-plugin/jquery.toast.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/jquery.toastr.js') }}"></script>
+    <script>
+        var csrftoken = "{{ csrf_token() }}"
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        });
+        function checkLockscreen() {
+            var pwd = document.getElementById("password")
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('main.api_checklockscreen') }}",
+                data: {password: pwd.value},
+                dataType: "json",
+                success: function (r) {
+                    if (r.status == "success") {
+                        $.NotificationApp.send("登录成功!", "正在为您跳转……", 'top-right', '#5ba035', 'success');
+                        setTimeout(function () {
+                            $("#lockscreenform").submit()
+                        },2000)
+                    } else {
+                        $.NotificationApp.send("登录失败!", r.reason, 'top-right', '#bf441d', 'error');
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}

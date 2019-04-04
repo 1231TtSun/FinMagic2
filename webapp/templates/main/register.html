@@ -1,0 +1,117 @@
+{% extends "main/main_base.html" %}
+{% block content %}
+    <!-- Register -->
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+
+                    <div class="wrapper-page">
+                        <div class="account-pages">
+                            <div class="account-box">
+
+                                <!-- Logo box-->
+                                <div class="account-logo-box">
+                                    <h2 class="text-uppercase text-center">
+                                        <a href="{{ url_for('main.index') }}" class="text-success">
+                                            <span><img src="{{ url_for('static',filename='images/logo_dark.png') }}"
+                                                       alt="" height="28"></span>
+                                        </a>
+                                    </h2>
+                                </div>
+
+                                <div class="account-content">
+                                    <form class="form-horizontal" action="{{ url_for('main.api_register') }}"
+                                          method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="form-group mb-3">
+                                            <label for="username" class="font-weight-medium">名字</label>
+                                            <input class="form-control" type="text" name="username" required="required"
+                                                   placeholder="名字">
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="emailaddress" class="font-weight-medium">邮件地址</label>
+                                            <input class="form-control" type="email" name="emailaddress" id="emailaddress" required="required"
+                                                   placeholder="该地址将被用作登录账号" onchange="checkEmailaddress()">
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="password" class="font-weight-medium">密码</label>
+                                            <input class="form-control" type="password" required="required" name="password" id="password"
+                                                   placeholder="输入密码" minlength="6" maxlength="16" onchange="checkPasswords()">
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <label for="confirmpassword" class="font-weight-medium">确认密码</label>
+                                            <input class="form-control" type="password" required="required"
+                                                   name="confirmpassword" id="confirmpassword" placeholder="输入密码" minlength="6" maxlength="16" onchange="checkPasswords()">
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <div class="checkbox checkbox-info">
+                                                <input id="remember" type="checkbox" checked required="required">
+                                                <label for="remember">
+                                                    我同意 <a href="#" class="text-muted">股票全景数据分析系统许可条款</a>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <button class="btn btn-block btn-success waves-effect waves-light"
+                                                    type="submit">免费注册
+                                            </button>
+                                        </div>
+                                    </form> <!-- end form -->
+
+
+                                    <div class="row mt-3">
+                                        <div class="col-12 text-center">
+                                            <p class="text-muted">我已经拥有账户？ <a href="{{ url_for('main.login') }}"
+                                                                              class="text-dark ml-1"><b>登录</b></a></p>
+                                        </div>
+                                    </div>
+
+                                </div> <!-- end account-content -->
+
+                            </div> <!-- end account-box -->
+                        </div>
+                        <!-- end account-page-->
+                    </div>
+                    <!-- end wrapper-page -->
+
+                </div> <!-- end col -->
+            </div> <!-- end row -->
+        </div> <!-- end container -->
+    </section>
+    <!-- END Register -->
+{% endblock %}
+{% block scripts %}
+    <script>
+    function checkEmailaddress() {
+        var email=document.getElementById("emailaddress")
+        $.ajax({
+            type:"GET",
+            url:"{{ url_for('main.api_checkemailaddress') }}",
+            data:{emailaddress:email.value},
+            dataType: "json",
+            success:function (r) {
+                if(r.status=="success"){
+                    email.setCustomValidity("")
+                }else {
+                    email.setCustomValidity("该邮件地址已被注册")
+                }
+            }
+        })
+    }
+    function checkPasswords() {
+        var pwd = document.getElementById("password");
+        var cpwd = document.getElementById("confirmpassword");
+        if (pwd.value != cpwd.value)
+            cpwd.setCustomValidity("两次输入的密码不匹配");
+        else
+            cpwd.setCustomValidity("");
+    }
+    </script>
+{% endblock %}
+
+

@@ -1,0 +1,974 @@
+{% extends "stock_prediction/stock_prediction_base.html" %}
+{% block styles %}
+    <link href="{{ url_for("static",filename="assets/css/stock_prediction/slider2.css") }}" rel="stylesheet" type="text/css"/>
+    <link href="{{ url_for("static",filename="assets/css/stock_prediction/style.css") }}" rel="stylesheet" type="text/css"/>
+    <style>
+        .left_nav #lefttabs #main1 div {
+            width: unset;
+        }
+
+        .left_nav #lefttabs #main2 div {
+            width: unset;
+        }
+
+        .left_nav #lefttabs #main3 div {
+            width: unset;
+        }
+
+        td {
+            height: 100px;
+            white-space: normal;
+            line-height: 25px !important;
+        }
+
+        th {
+            height: 20px;
+        }
+
+        #bigholder td {
+            height: 40px;
+            white-space: normal;
+            line-height: 25px !important;
+        }
+
+        .badge {
+            border-radius: 3px;
+            padding: 2px 4px;
+            text-align: center;
+            font-size: 12px;
+        }
+    </style>
+
+{% endblock %}
+{% block page_container %}
+    <div class="row">
+
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                <div class="nav flex-column nav-pills nav-pills-tab" id="date_tab" role="tablist"
+                     aria-orientation="vertical">
+
+                </div>
+            </div> <!-- end row-->
+
+
+        </div>
+        <div class="col-8">
+            <div>
+                <h2 class="left">
+                    全局指南(2019/02/26)
+                    <a class="btn_col" href="../help/fullview.aspx" target="_blank" title="关于该方法的详细介绍">详解</a></h2>
+            </div>
+            <div><br/><br/></div>
+            {#zijin#}
+            <div><h2 class="left fd" id="zijin">所属板块资金流向 <a class="btn_col" href="../fullview/capital_1.aspx"
+                                                            target="_blank" title="关于该方法的结果排序">排序</a></h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table class="table  table-hover fullwidth" style="table-layout: fixed; text-align: center;width:900px">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">股票名称</th>
+                        <th style="width: 200px">所属板块</th>
+                        <th style="width: 90px">板块交易量排名</th>
+                        <th style="width: 90px">板块交易量变化率排名</th>
+                        <th style="width: 90px">板块总数</th>
+                        <th style="">资金流向全景和所属板块位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td rowspan="3" id="zijin_code_name"></td>
+                        <td style="text-align: left;" id="zijin_industry">
+                        </td>
+                        <td id="zijin_industry_value_rank"></td>
+                        <td id="zijin_industry_change_rank"></td>
+                        <td id="zijin_industry_count"></td>
+                        <td style="text-align: left"><span id="zijin1"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="zijin_region"></td>
+                        <td id="zijin_region_value_rank"></td>
+                        <td id="zijin_region_change_rank"></td>
+                        <td id="zijin_region_count"></td>
+                        <td style="text-align: left"><span id="zijin2"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="zijin_concept"></td>
+                        <td id="zijin_concept_value_rank"></td>
+                        <td id="zijin_concept_change_rank"></td>
+                        <td id="zijin_concept_count"></td>
+                        <td style="text-align: left"><span id="zijin3"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div><br/><br/></div>
+            {#huanshou#}
+            <div><h2 class="left fd" id="huanshou">所属板块活跃程度 <a class="btn_col" href="../fullview/turnover_1.aspx"
+                                                               target="_blank" title="关于该方法的结果排序">排序</a></h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table class="table  table-hover fullwidth" style="table-layout: fixed; text-align: center;width:900px">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">股票名称</th>
+                        <th style="width: 200px">所属板块</th>
+                        <th style="width: 90px">板块交易量排名</th>
+                        <th style="width: 90px">板块交易量变化率排名</th>
+                        <th style="width: 90px">板块总数</th>
+                        <th style="">资金流向全景和所属板块位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td rowspan="3" id="huanshou_code_name"></td>
+                        <td style="text-align: left;" id="huanshou_industry">
+                        </td>
+                        <td id="huanshou_industry_value_rank"></td>
+                        <td id="huanshou_industry_change_rank"></td>
+                        <td id="huanshou_industry_count"></td>
+                        <td style="text-align: left"><span id="huanshou1"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="huanshou_region"></td>
+                        <td id="huanshou_region_value_rank"></td>
+                        <td id="huanshou_region_change_rank"></td>
+                        <td id="huanshou_region_count"></td>
+                        <td style="text-align: left"><span id="huanshou2"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="huanshou_concept"></td>
+                        <td id="huanshou_concept_value_rank"></td>
+                        <td id="huanshou_concept_change_rank"></td>
+                        <td id="huanshou_concept_count"></td>
+                        <td style="text-align: left"><span id="huanshou3"></span></td>
+                    </tr>
+                </table>
+            </div>
+            {#zhangdie#}
+            <div><br/><br/></div>
+            <div><h2 class="left fd" id="zhangdie">所属板块涨跌走势 <a class="btn_col" href="../fullview/change_1.aspx"
+                                                               target="_blank" title="关于该方法的结果排序">排序</a></h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table class="table  table-hover fullwidth" style="table-layout: fixed; text-align: center;width:900px">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">股票名称</th>
+                        <th style="width: 200px">所属板块</th>
+                        <th style="width: 90px">板块交易量排名</th>
+                        <th style="width: 90px">板块交易量变化率排名</th>
+                        <th style="width: 90px">板块总数</th>
+                        <th style="">资金流向全景和所属板块位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td rowspan="3" id="zhangdie_code_name"></td>
+                        <td style="text-align: left;" id="zhangdie_industry">
+                        </td>
+                        <td id="zhangdie_industry_value_rank"></td>
+                        <td id="zhangdie_industry_change_rank"></td>
+                        <td id="zhangdie_industry_count"></td>
+                        <td style="text-align: left"><span id="zhangdie1"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="zhangdie_region"></td>
+                        <td id="zhangdie_region_value_rank"></td>
+                        <td id="zhangdie_region_change_rank"></td>
+                        <td id="zhangdie_region_count"></td>
+                        <td style="text-align: left"><span id="zhangdie2"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="zhangdie_concept"></td>
+                        <td id="zhangdie_concept_value_rank"></td>
+                        <td id="zhangdie_concept_change_rank"></td>
+                        <td id="zhangdie_concept_count"></td>
+                        <td style="text-align: left"><span id="zhangdie3"></span></td>
+                    </tr>
+                </table>
+            </div>
+            {#shizhi#}
+            <div><br/><br/></div>
+            <div><h2 class="left fd" id="shizhi">所属板块市值权重 <a class="btn_col" href="../fullview/totalvalue_1.aspx"
+                                                             target="_blank" title="关于该方法的结果排序">排序</a></h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table class="table  table-hover fullwidth" style="table-layout: fixed; text-align: center;width:900px">
+                    <thead>
+                    <tr>
+                        <th style="width: 100px">股票名称</th>
+                        <th style="width: 200px">所属板块</th>
+                        <th style="width: 90px">板块交易量排名</th>
+                        <th style="width: 90px">板块交易量变化率排名</th>
+                        <th style="width: 90px">板块总数</th>
+                        <th style="">资金流向全景和所属板块位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td rowspan="3" id="shizhi_code_name"></td>
+                        <td style="text-align: left;" id="shizhi_industry">
+                        </td>
+                        <td id="shizhi_industry_value_rank"></td>
+                        <td id="shizhi_industry_change_rank"></td>
+                        <td id="shizhi_industry_count"></td>
+                        <td style="text-align: left"><span id="shizhi1"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="shizhi_region"></td>
+                        <td id="shizhi_region_value_rank"></td>
+                        <td id="shizhi_region_change_rank"></td>
+                        <td id="shizhi_region_count"></td>
+                        <td style="text-align: left"><span id="shizhi2"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;" id="shizhi_concept"></td>
+                        <td id="shizhi_concept_value_rank"></td>
+                        <td id="shizhi_concept_change_rank"></td>
+                        <td id="shizhi_concept_count"></td>
+                        <td style="text-align: left"><span id="shizhi3"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <div><br/><br/></div>
+
+            <div><h2 class="left fd" id="guzhi">所属行业分类的估值</h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table class="table  table-hover fullwidth" style="table-layout: fixed; text-align: center;">
+                    <thead>
+                    <tr>
+                        <th style="width: 80px;">股票名称</th>
+                        <th style="width: 150px;">所属行业分类</th>
+                        <th style="width: 80px;">分类PE<br/>均值</th>
+                        <th style="width: 80px;">分类PE<br/>排名</th>
+                        <th style="width: 80px;">分类<br/>总数</th>
+                        <th>分类估值全景和所属分类的位置</th>
+                    </tr>
+                    </thead>
+                    <tr>
+                        <td rowspan="2">万科A<br/>(000002)</td>
+                        <td style="text-align: left;">证监会行业分类:<br/><b>房地产业</b></td>
+                        <td>9.72</td>
+                        <td><span class="badge badge-red">4</span></td>
+                        <td><span class="badge badge-gray">79</span></td>
+                        <td style="text-align: left"><span id="sparkslimPE1"></span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">国证行业分类:<br/><b>房地产开发和管理</b></td>
+                        <td>9.82</td>
+                        <td><span class="badge badge-red">3</span></td>
+                        <td><span class="badge badge-gray">78</span></td>
+                        <td style="text-align: left"><span id="sparkslimPE2"></span></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div><br/><br/></div>
+            <div><h2 class="left fd" id="gudong">持股大股东动向 (报告期：2018/09/30)</h2></div>
+            <div><h4 class="bord"></h4></div>
+            <div>
+                <table id="bigholder" class="table  table-hover fullwidth"
+                       style="table-layout: fixed; text-align: center;">
+                    <thead>
+                    <tr>
+                        <th style="width: 60px;">股票名称</th>
+                        <th style="text-align: left;width: 300px;">大股东名称</th>
+                        <th style="width: 80px;">持股总市值<br/>(亿元)</th>
+                        <th style="width: 60px;">持股<br/>数量</th>
+                        <th>持股数变动走势<br/>(近3个报告期)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td rowspan="7">万科Ａ<br/>(000002)</td>
+                        <td style="text-align: left;">HKSCC NOMINEES LIMITED</td>
+                        <td>8007.88</td>
+                        <td>36</td>
+                        <td><span class="sparkslim">26,33,36</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">深圳市钜盛华股份有限公司</td>
+                        <td>269.42</td>
+                        <td>3</td>
+                        <td><span class="sparkslim">2,3,3</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">安邦人寿保险股份有限公司-保守型投资组合</td>
+                        <td>131.55</td>
+                        <td>5</td>
+                        <td><span class="sparkslim">5,6,5</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">前海人寿保险股份有限公司-海利年年</td>
+                        <td>223.14</td>
+                        <td>8</td>
+                        <td><span class="sparkslim">7,9,8</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">安邦财产保险股份有限公司-传统产品</td>
+                        <td>780.79</td>
+                        <td>8</td>
+                        <td><span class="sparkslim">8,8,8</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">UBS AG</td>
+                        <td>128.71</td>
+                        <td>33</td>
+                        <td><span class="sparkslim">20,25,33</span></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left;">中央汇金资产管理有限责任公司</td>
+                        <td>3082.78</td>
+                        <td>851</td>
+                        <td><span class="sparkslim">601,765,851</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div><p>- 个股出报告的时间并不一致，故最后一期（当前期）的持股数/持股总市值的统计仅根据已出报告的个股。<br/>-
+                持股数变动走势的报告期分别为：03/31，06/30，09/30，12/31；以当前日期往前推算3个报告期。 <br/>- 持股数变动走势的最后一期持股数需待所有个股全部出完报告后才是准确的数据。<br/>
+            </p></div>
+
+        </div>
+    </div>
+    <!-- /left_nav -->
+
+{% endblock %}
+{% block page_scripts %}
+    <script src="{{ url_for('static',filename='libs/sparkline/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='libs/echarts/echarts.js') }}"></script>
+    <script type="text/javascript">
+                $("#sparkslimPE1").sparkline([6.73, 6.87, 9.41, 9.72, 10.14, 10.53, 10.78, 12, 12.59, 12.98, 13.11, 14.26, 15.43, 15.53, 16.1, 16.93, 17.51, 17.73, 17.9, 18.01, 18.21, 18.68, 19.03, 19.17, 19.42, 19.59, 19.62, 19.75, 20.15, 20.18, 20.64, 21.57, 22.12, 22.31, 22.81, 23.42, 23.66, 24.19, 24.29, 25.07, 25.26, 25.52, 25.61, 25.63, 26.33, 26.49, 26.55, 26.74, 27.55, 27.8, 28.27, 28.34, 28.93, 29.69, 29.97, 30.68, 31.16, 31.91, 32.54, 32.87, 33.26, 34.1, 35.77, 37.32, 37.35, 37.79, 38.44, 39.56, 42.49, 42.99, 43.02, 43.55, 44.8, 54.15, 54.72, 59.88, 60.53, 82.53, 83.12], {
+                    type: 'bar',
+                    width: '100%',
+                    height: '100',
+                    barWidth: 3,
+                    barSpacing: 1,
+                    spotColor: false,
+                    minSpotColor: false,
+                    maxSpotColor: false,
+                    barColor: '#5eafcd',
+                    chartRangeMin: 0,
+                    chartRangeMax: 83.12,
+                    tooltipPrefix: '滚动市盈率：',
+                    tooltipSuffix: ' 倍',
+                    {#                    tooltipFormat: '分类：{{value:levels}}<br/><span style="display:inline;color: {{color}}">●</span> {{prefix}}{{value}}{{suffix}}',#}
+                    tooltipValueLookups: {
+                        levels: $.range_map({
+                            '6.73': '黑色金属冶炼和压延加工业',
+                            '6.87': '货币金融服务',
+                            '9.41': '煤炭开采和洗选业',
+                            '9.72': '房地产业',
+                            '10.14': '租赁业',
+                            '10.53': '土木工程建筑业',
+                            '10.78': '铁路运输业',
+                            '12': '造纸和纸制品业',
+                            '12.59': '非金属矿物制品业',
+                            '12.98': '道路运输业',
+                            '13.11': '石油加工、炼焦和核燃料加工业',
+                            '14.26': '汽车制造业',
+                            '15.43': '批发业',
+                            '15.53': '化学原料和化学制品制造业',
+                            '16.1': '装卸搬运和运输代理业',
+                            '16.93': '新闻和出版业',
+                            '17.51': '石油和天然气开采业',
+                            '17.73': '纺织业',
+                            '17.9': '木材加工和木、竹、藤、棕、草制品业',
+                            '18.01': '保险业',
+                            '18.21': '零售业',
+                            '18.68': '建筑装饰和其他建筑业',
+                            '19.03': '广播、电视、电影和影视录音制作业',
+                            '19.17': '水的生产和供应业',
+                            '19.42': '电力、热力生产和供应业',
+                            '19.59': '化学纤维制造业',
+                            '19.62': '纺织服装、服饰业',
+                            '19.75': '水上运输业',
+                            '20.15': '生态保护和环境治理业',
+                            '20.18': '电气机械和器材制造业',
+                            '20.64': '商务服务业',
+                            '21.57': '建筑安装业',
+                            '22.12': '金属制品业',
+                            '22.31': '皮革、毛皮、羽毛及其制品和制鞋业',
+                            '22.81': '家具制造业',
+                            '23.42': '橡胶和塑料制品业',
+                            '23.66': '住宿业',
+                            '24.19': '燃气生产和供应业',
+                            '24.29': '公共设施管理业',
+                            '25.07': '农副食品加工业',
+                            '25.26': '航空运输业',
+                            '25.52': '渔业',
+                            '25.61': '酒、饮料和精制茶制造业',
+                            '25.63': '其他金融业',
+                            '26.33': '医药制造业',
+                            '26.49': '有色金属冶炼和压延加工业',
+                            '26.55': '废弃资源综合利用业',
+                            '26.74': '通用设备制造业',
+                            '27.55': '印刷和记录媒介复制业',
+                            '27.8': '有色金属矿采选业',
+                            '28.27': '仪器仪表制造业',
+                            '28.34': '其他制造业',
+                            '28.93': '邮政业',
+                            '29.69': '餐饮业',
+                            '29.97': '计算机、通信和其他电子设备制造业',
+                            '30.68': '专业技术服务业',
+                            '31.16': '专用设备制造业',
+                            '31.91': '资本市场服务',
+                            '32.54': '房屋建筑业',
+                            '32.87': '食品制造业',
+                            '33.26': '互联网和相关服务',
+                            '34.1': '农业',
+                            '35.77': '铁路、船舶、航空航天和其他运输设备制造业',
+                            '37.32': '非金属矿采选业',
+                            '37.35': '文化艺术业',
+                            '37.79': '电信、广播电视和卫星传输服务',
+                            '38.44': '卫生',
+                            '39.56': '文教、工美、体育和娱乐用品制造业',
+                            '42.49': '畜牧业',
+                            '42.99': '体育',
+                            '43.02': '软件和信息技术服务业',
+                            '43.55': '综合',
+                            '44.8': '仓储业',
+                            '54.15': '开采辅助活动',
+                            '54.72': '教育',
+                            '59.88': '机动车、电子产品和日用产品修理业',
+                            '60.53': '农、林、牧、渔服务业',
+                            '82.53': '研究和试验发展',
+                            '83.12': '林业'
+                        })
+                    }
+                });
+                $("#sparkslimPE1").sparkline([0, 0, 0, 9.72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {
+                    composite: true,
+                    type: 'bar',
+                    barWidth: 3,
+                    barSpacing: 1,
+                    spotColor: false,
+                    minSpotColor: false,
+                    maxSpotColor: false,
+                    barColor: '#ff0000',
+                    chartRangeMin: 0,
+                    chartRangeMax: 83.12,
+                    tooltipFormatFieldlist: [],
+                    tooltipFormatFieldlistKey: 'field'
+                });
+                $("#sparkslimPE2").sparkline([6.86, 7.16, 9.82, 9.87, 10, 11.16, 11.41, 12.23, 12.25, 12.86, 13.05, 13.18, 13.36, 13.53, 13.88, 14.2, 14.61, 15.34, 15.65, 17.05, 17.16, 17.94, 17.98, 18.01, 18.07, 18.16, 18.18, 18.3, 19.38, 19.47, 20.13, 20.68, 21.2, 21.6, 21.81, 22.64, 23, 23.57, 23.67, 23.79, 24.99, 25.43, 25.55, 25.6, 25.69, 25.88, 26.86, 27.2, 27.54, 28.52, 28.61, 28.67, 28.76, 29.1, 29.87, 30.82, 33.35, 33.85, 33.9, 33.93, 35.85, 35.98, 36.4, 36.98, 38.55, 39.48, 39.54, 41.01, 42.47, 42.81, 42.84, 43.71, 45.77, 50.75, 51.92, 53.13, 59.05, 73.49], {
+                    type: 'bar',
+                    width: '100%',
+                    height: '100',
+                    barWidth: 3,
+                    barSpacing: 1,
+                    spotColor: false,
+                    minSpotColor: false,
+                    maxSpotColor: false,
+                    barColor: '#5eafcd',
+                    chartRangeMin: 0,
+                    chartRangeMax: 73.49,
+                    tooltipPrefix: '滚动市盈率：',
+                    tooltipSuffix: ' 倍',
+                    {#                    tooltipFormat: '分类：{{value:levels}}<br/><span style="display:inline;color: {{color}}">●</span> {{prefix}}{{value}}{{suffix}}',#}
+                    tooltipValueLookups: {
+                        levels: $.range_map({
+                            '6.86': '银行',
+                            '7.16': '黑色金属',
+                            '9.82': '房地产开发和管理',
+                            '9.87': '煤炭',
+                            '10': '建筑材料',
+                            '11.16': '建筑与工程',
+                            '11.41': '消费品经销商',
+                            '12.23': '陆运',
+                            '12.25': '纸类与林业产品',
+                            '12.86': '汽车',
+                            '13.05': '可替代能源',
+                            '13.18': '工业贸易经销商',
+                            '13.36': '百货商店',
+                            '13.53': '家用电器',
+                            '13.88': '农用化工',
+                            '14.2': '化学原料',
+                            '14.61': '其他金融服务',
+                            '15.34': '专营零售',
+                            '15.65': '交通基本设施',
+                            '17.05': '合成纤维',
+                            '17.16': '石油天然气',
+                            '17.94': '纺织品',
+                            '17.98': '非金属材料与制品',
+                            '18.01': '保险',
+                            '18.07': '房地产服务',
+                            '18.16': '酒店餐饮与休闲',
+                            '18.18': '复合型公用事业',
+                            '18.3': '汽车零配件与设备',
+                            '19.38': '传媒',
+                            '19.47': '电力公用事业',
+                            '20.13': '化学制品',
+                            '20.68': '服装与配饰',
+                            '21.2': '中药',
+                            '21.6': '水公用事业',
+                            '21.81': '建筑产品',
+                            '22.64': '食品与主要用品零售',
+                            '23': '耐用家居用品',
+                            '23.57': '化学原料药',
+                            '23.67': '重型电气设备',
+                            '23.79': '通用机械',
+                            '24.99': '投资信托',
+                            '25.43': '商业用品与服务',
+                            '25.55': '光电子器件',
+                            '25.6': '饮料',
+                            '25.69': '航空运输',
+                            '25.88': '燃气公用事业',
+                            '26.86': '物流',
+                            '27.2': '有色金属',
+                            '27.54': '专用设备',
+                            '28.52': '电子设备及服务',
+                            '28.61': '食品',
+                            '28.67': '个人用品',
+                            '28.76': '家常用品',
+                            '29.1': '容器与包装',
+                            '29.87': '电气部件与设备',
+                            '30.82': '化学制剂',
+                            '33.35': '其他消费者服务',
+                            '33.85': '证券',
+                            '33.9': '电子元器件',
+                            '33.93': '水上运输',
+                            '35.85': '农牧渔产品',
+                            '35.98': '电脑与外围设备',
+                            '36.4': '通信设备',
+                            '36.98': '半导体',
+                            '38.55': '通信技术服务',
+                            '39.48': '互联网软件与服务',
+                            '39.54': '电信增值服务',
+                            '41.01': '信息技术服务',
+                            '42.47': '生物科技',
+                            '42.81': '工业集团企业',
+                            '42.84': '休闲设备与用品',
+                            '43.71': '医疗保健设备与用品',
+                            '45.77': '计算机软件',
+                            '50.75': '网络零售',
+                            '51.92': '能源设备与服务',
+                            '53.13': '航天航空',
+                            '59.05': '医疗保健提供商与服务',
+                            '73.49': '电信运营'
+                        })
+                    }
+                });
+                $("#sparkslimPE2").sparkline([0, 0, 9.82, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], {
+                    composite: true,
+                    type: 'bar',
+                    barWidth: 3,
+                    barSpacing: 1,
+                    spotColor: false,
+                    minSpotColor: false,
+                    maxSpotColor: false,
+                    barColor: '#ff0000',
+                    chartRangeMin: 0,
+                    chartRangeMax: 73.49,
+                    tooltipFormatFieldlist: [],
+                    tooltipFormatFieldlistKey: 'field'
+                });
+            </script>
+    <script type="text/javascript">
+        region_dict = {
+            "上海": ['province', '上海'],
+            "云南": ['province', '云南省'],
+            "内蒙古": ['province', '内蒙古自治区'],
+            "北京": ['province', '北京'],
+            "吉林": ['province', '吉林省'],
+            "宁夏": ['province', '宁夏回族自治区'],
+            "安徽": ['province', '安徽省'],
+            "山东": ['province', '山东省'],
+            "山西": ['province', '山西省'],
+            "广东": ['province', '广东省'],
+            "广州": ['city', '广州市'],
+            "广西": ['province', '广西壮族自治区'],
+            "新疆": ['province', '新疆维吾尔自治区'],
+            "江苏": ['province', '江苏省'],
+            "江西": ['province', '江西省'],
+            "河北": ['province', '河北省'],
+            "河南": ['province', '河南省'],
+            "浙江": ['province', '浙江省'],
+            "深圳": ['city', '深圳市'],
+            "海南": ['province', '海南省'],
+            "湖北": ['province', '湖北省'],
+            "湖南": ['province', '湖南省'],
+            "甘肃": ['province', '甘肃省'],
+            "福建": ['province', '福建省'],
+            "西藏": ['province', '西藏自治区'],
+            "贵州": ['province', '贵州省'],
+            "辽宁": ['province', '辽宁省'],
+            "重庆": ['province', '重庆'],
+            "陕西": ['province', '陕西省'],
+            "青海": ['province', '青海省'],
+            "黑龙江": ['province', '黑龙江省']
+        }
+        {#    用设置导航栏active#}
+
+        function active(index) {
+            $('#' + index).removeClass("nav-link")
+            $('#' + index).addClass("nav-link active")
+
+            {#            li.setAttribute("class", "nav-item active");#}
+        }
+
+        {#用于填充左侧时间列表#}
+
+        function creat_date_tab(stime, etime) {
+            //初始化日期列表，数组
+            {#            var diffdate = new Array();#}
+            var i = 0;
+            $("#date_tab").append("<a class=\"nav-link active show mb-2\" data-toggle=\"pill\"href=\"#v-pills-home\" onclick=\"change_date('" + stime + "')\" >" + stime + "</a>")
+            //开始日期小于等于结束日期,并循环
+            while (stime <= etime) {
+
+                {#                diffdate[i] = stime;#}
+                //获取开始日期时间戳
+                var stime_ts = new Date(stime).getTime();
+                {#                console.log('当前日期：' + stime + '当前时间戳：' + stime_ts);#}
+
+                //增加一天时间戳后的日期
+                var next_date = stime_ts + (24 * 60 * 60 * 1000);
+
+                //拼接年月日，这里的月份会返回（0-11），所以要+1
+                var next_dates_y = new Date(next_date).getFullYear() + '/';
+                var next_dates_m = (new Date(next_date).getMonth() + 1 < 10) ? '0' + (new Date(next_date).getMonth() + 1) + '/' : (new Date(next_date).getMonth() + 1) + '/';
+                var next_dates_d = (new Date(next_date).getDate() < 10) ? '0' + new Date(next_date).getDate() : new Date(next_date).getDate();
+
+                stime = next_dates_y + next_dates_m + next_dates_d;
+                $("#date_tab").append("<a class=\"nav-link  show mb-2\" data-toggle=\"pill\"href=\"#v-pills-home\" onclick=\"change_date('" + stime + "')\" >" + stime + "</a>")
+                //增加数组key
+                i++;
+
+            }
+
+            {#            console.log(diffdate);#}
+        }
+
+        {#时间列表点击事件#}
+
+        function change_date(date) {
+            global_date = date
+        }
+
+        {#        获取数据#}
+
+        function get_data() {
+            $.ajax({
+                url: "/stock_prediction/api_qjzn",
+                async: false,
+                type: "GET",
+                dataType: "json",
+                data: {
+                    date: "20181102",
+                    code: "{{ code }}",
+                },
+                success: function (data) {
+
+
+                    creat_table(data, 'zijin')
+                    creat_table(data, 'huanshou')
+                    creat_table(data, 'zhangdie')
+                    creat_table(data, 'shizhi')
+                }
+            });
+        }
+
+        {#        填充表格#}
+
+        function creat_table(data, index) {
+            data_index = data[index]
+            index_cn = ''
+            unit = ''
+            if (index == 'zijin') {
+                index_cn = '资金交易量'
+                unit = '亿'
+            }
+            else if (index == 'huanshou') {
+                index_cn = '平均换手率'
+                unit = '%'
+            }
+            else if (index == 'zhangdie') {
+                index_cn = '平均涨跌幅'
+                unit = '%'
+            }
+            else if (index == 'shizhi') {
+                index_cn = '流通市值'
+                unit = '千亿'
+            }
+            console.log(data)
+            {#            行业#}
+            industry_value_rank = indexOf(data_index['industry']['name'], data['industry'])
+            industry_change_rank = rankOf(data_index['industry']['change'], [data_index['industry']['change'][industry_value_rank - 1]])
+            $("#" + index + "_code_name").append(data['name'] + "<br/>(" + data['code'] + ")")
+            for (var i = 0; i < data['industry'].length; i++) {
+                $("#" + index + "_industry").append("<a href=\"../fullview/stocklist.aspx?code=sw_fdc\" target=\"_blank\">行业：" + data['industry'][i] + "</a></br>")
+
+            }
+            for (var i = 0; i < industry_value_rank.length; i++) {
+                $("#" + index + "_industry_value_rank").append("<span class=\"badge badge-red\">" + industry_value_rank[i] + "</span></br>")
+
+            }
+            for (var i = 0; i < industry_change_rank.length; i++) {
+                $("#" + index + "_industry_change_rank").append("<span class=\"badge badge-red\">" + industry_change_rank[i] + "</span></br>")
+            }
+            $("#" + index + "_industry_count").append("<span class=\"badge badge-gray\">" + data_index['industry']['name'].length + "</span>")
+            $("#" + index + "1").sparkline(data_index['industry']['value'], {
+                type: 'bar',
+                width: '100%',
+                height: '100',
+                barWidth: 8,
+                barSpacing: 3,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#5eafcd',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['industry']['value']),
+                tooltipPrefix: index_cn + '：',
+                tooltipSuffix: unit,
+                tooltipFormat: '行业：{\{value:levels}\}<br/><span style="display:inline;color: {\{color}\}">●</span> {\{prefix}}{\{value}}{\{suffix}}',
+                tooltipValueLookups: {
+                    levels: $.range_map(creat_levels(data_index['industry']['name'], data_index['industry']['value']))
+                }
+            });
+            $("#" + index + "1").sparkline(creat_spk2_data(data_index['industry']['value'], industry_value_rank), {
+                composite: true,
+                type: 'bar',
+                barWidth: 8,
+                barSpacing: 3,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#ff0000',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['industry']['value']),
+                tooltipFormatFieldlist: [],
+                tooltipFormatFieldlistKey: 'field'
+            });
+            $("#" + index + "1").sparkline(data_index['industry']['change'], {
+                composite: true,
+                type: 'line',
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                lineColor: '#FFCC00',
+                lineWidth: 2,
+                fillColor: false,
+                tooltipPrefix: '较前日变化率：',
+                tooltipSuffix: '%'
+            });
+            {#            地域#}
+            region_list = []
+            for (var i = 0; i < data['region'].length; i++) {
+                for (var j in region_dict) {
+                    if (region_dict[j][1] == data['region'][i]) {
+                        region_list.push(j)
+                    }
+                }
+            }
+
+            region_value_rank = indexOf(data_index['region']['name'], region_list)
+            tmp = []
+            for (var i = 0; i < region_value_rank.length; i++) {
+                tmp.push(data_index['region']['change'][region_value_rank[i] - 1])
+            }
+            region_change_rank = rankOf(data_index['region']['change'], tmp)
+            for (var i = 0; i < region_list.length; i++) {
+
+                $("#" + index + "_region").append("<a href=\"../fullview/stocklist.aspx?code=sw_fdc\" target=\"_blank\">地域：" + region_list[i] + "</a></br>")
+
+            }
+            for (var i = 0; i < region_value_rank.length; i++) {
+                $("#" + index + "_region_value_rank").append("<span class=\"badge badge-red\">" + region_value_rank[i] + "</span></br>")
+
+            }
+            for (var i = 0; i < region_change_rank.length; i++) {
+                $("#" + index + "_region_change_rank").append("<span class=\"badge badge-red\">" + region_change_rank[i] + "</span></br>")
+            }
+            $("#" + index + "_region_count").append("<span class=\"badge badge-gray\">" + data_index['region']['name'].length + "</span>")
+            $("#" + index + "2").sparkline(data_index['region']['value'], {
+                type: 'bar',
+                width: '100%',
+                height: '100',
+                barWidth: 7,
+                barSpacing: 2,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#5eafcd',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['region']['value']),
+                tooltipPrefix: index_cn + '：',
+                tooltipSuffix: unit,
+                tooltipFormat: '地区：{\{value:levels}\}<br/><span style="display:inline;color: {\{color}\}">●</span> {\{prefix}}{\{value}}{\{suffix}}',
+                tooltipValueLookups: {
+                    levels: $.range_map(creat_levels(data_index['region']['name'], data_index['region']['value']))
+                }
+            });
+            $("#" + index + "2").sparkline(creat_spk2_data(data_index['region']['value'], region_value_rank), {
+                composite: true,
+                type: 'bar',
+                barWidth: 7,
+                barSpacing: 2,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#ff0000',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['region']['value']),
+                tooltipFormatFieldlist: [],
+                tooltipFormatFieldlistKey: 'field'
+            });
+            $("#" + index + "2").sparkline(data_index['region']['change'], {
+                composite: true,
+                type: 'line',
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                lineColor: '#FFCC00',
+                lineWidth: 1,
+                fillColor: false,
+                tooltipPrefix: '较前日变化率：',
+                tooltipSuffix: '%'
+            });
+            {#            概念#}
+            {#            处理concept，去除没有数据的概念#}
+            concept_list = []
+            for (var i = 0; i < data['concept'].length; i++) {
+                if (data_index['concept']['name'].includes(data['concept'][i])) {
+                    concept_list.push(data['concept'][i])
+                }
+            }
+            concept_value_rank = indexOf(data_index['concept']['name'], concept_list)
+            tmp = []
+            for (var i = 0; i < concept_value_rank.length; i++) {
+                tmp.push(data_index['concept']['change'][concept_value_rank[i] - 1])
+            }
+            concept_change_rank = rankOf(data_index['concept']['change'], tmp)
+            for (var i = 0; i < concept_list.length; i++) {
+
+                $("#" + index + "_concept").append("<a href=\"../fullview/stocklist.aspx?code=sw_fdc\" target=\"_blank\">地域：" + concept_list[i] + "</a></br>")
+
+            }
+            for (var i = 0; i < concept_value_rank.length; i++) {
+                $("#" + index + "_concept_value_rank").append("<span class=\"badge badge-red\">" + concept_value_rank[i] + "</span></br>")
+
+            }
+            for (var i = 0; i < concept_change_rank.length; i++) {
+                $("#" + index + "_concept_change_rank").append("<span class=\"badge badge-red\">" + concept_change_rank[i] + "</span></br>")
+            }
+            $("#" + index + "_concept_count").append("<span class=\"badge badge-gray\">" + data_index['concept']['name'].length + "</span>")
+            $("#" + index + "3").sparkline(data_index['concept']['value'].slice(0, 150), {
+                type: 'bar',
+                width: '100%',
+                height: '100',
+                barWidth: 1,
+                barSpacing: 1,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#5eafcd',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['concept']['value']),
+                tooltipPrefix: index_cn + '：',
+                tooltipSuffix: unit,
+                tooltipFormat: '概念：{\{value:levels}\}<br/><span style="display:inline;color: {\{color}\}">●</span> {\{prefix}}{\{value}}{\{suffix}}',
+                tooltipValueLookups: {
+                    levels: $.range_map(creat_levels(data_index['concept']['name'], data_index['concept']['value']))
+                }
+            });
+            $("#" + index + "3").sparkline(creat_spk2_data(data_index['concept']['value'], concept_value_rank).slice(0, 150), {
+                composite: true,
+                type: 'bar',
+                barWidth: 1,
+                barSpacing: 1,
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                barColor: '#ff0000',
+                chartRangeMin: 0,
+                chartRangeMax: maxOf(data_index['concept']['value']),
+                tooltipFormatFieldlist: [],
+                tooltipFormatFieldlistKey: 'field'
+            });
+            $("#" + index + "3").sparkline(data_index['concept']['change'].slice(0, 150), {
+                composite: true,
+                type: 'line',
+                spotColor: false,
+                minSpotColor: false,
+                maxSpotColor: false,
+                lineColor: '#FFCC00',
+                lineWidth: 1,
+                fillColor: false,
+                tooltipPrefix: '较前日变化率：',
+                tooltipSuffix: '%'
+            });
+
+        }
+
+        creat_date_tab("2018/11/01", "2018/11/30")
+        active('qjzn')
+        get_data()
+
+        {#        获取指定元素在列表中的位置#}
+
+        function indexOf(arr, item) {
+            list = []
+            for (var j = 0; j < item.length; j++) {
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] === item[j])
+                        list.push(i + 1)
+
+                }
+            }
+            return list;
+        }
+
+        {#        获取指定元素在列表中的由大到小排名#}
+
+        function rankOf(arr, item) {
+            list = []
+            for (var j = 0; j < item.length; j++) {
+                list[j] = 1
+                for (var i = 0; i < arr.length; i++) {
+                    if (arr[i] > item[j])
+                        list[j] = list[j] + 1
+
+                }
+            }
+            return list;
+        }
+
+        {#    获取列表中最大值#}
+
+        function maxOf(arr) {
+            j = arr[0]
+            for (var i = 1; i < arr.length; i++) {
+                if (arr[i] > j) {
+                    j = arr[i]
+                }
+
+
+            }
+            return j;
+        }
+
+        {#    生成levels 用于绘制板块内第三个sparkline#}
+
+        function creat_levels(name, value) {
+            levels = {}
+            for (var i = 0; i < name.length; i++) {
+                levels[value[i]] = name[i]
+
+
+            }
+            return levels
+        }
+
+        {#    生成数据 用于绘制板块内第二个sparkline#}
+
+        function creat_spk2_data(value_list, index_list) {
+            var arr = new Array(value_list.length);
+            arr.fill(0);
+            for (var i = 0; i < index_list.length; i++) {
+                arr[index_list[i] - 1] = value_list[index_list[i] - 1]
+            }
+            return arr
+        }
+    </script>
+{% endblock %}

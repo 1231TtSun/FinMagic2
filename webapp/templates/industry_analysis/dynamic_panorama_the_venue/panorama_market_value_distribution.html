@@ -1,0 +1,1468 @@
+{% extends "base.html" %}
+{% block pagetitle %}
+    <div class="page-title-alt-bg"></div>
+    <div class="page-title-box">
+        <ol class="breadcrumb float-right">
+            <li class="breadcrumb-item"><a href="javascript:void(0);">全景掌握当日交易不同分类资金的分布及变化动向。</a></li>
+            {#            <li class="breadcrumb-item"><a href="javascript:void(0);">场内动态全景</a></li>#}
+        </ol>
+        <h4 class="page-title">市值分布全景</h4>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                <div class="nav flex-column nav-pills nav-pills-tab" id="time_list" role="tablist"
+                     aria-orientation="vertical">
+
+                </div>
+            </div> <!-- end row-->
+        </div>
+        <div class="col-8">
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="#home1" data-toggle="tab" aria-expanded="false" class="nav-link active" id="button_industry">按行业</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#profile1" data-toggle="tab" aria-expanded="true"
+                                   class="nav-link" id="button_region">按地域</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#messages1" data-toggle="tab" aria-expanded="false" class="nav-link" id="button_concept">按概念</a>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+            <div id="jyzjl_1" style="width:100%;height:500px;"></div>
+            <a style="color: red" id="tag_1"></a>
+            <div id="jyzjl_5" style="width:100%;height:500px;margin-top: 50px"></div>
+            <a style="color: red" id="tag_5"></a>
+            <div id="jyzjl_20" style="width:100%;height:500px;margin-top: 50px"></div>
+            <a style="color: red" id="tag_20"></a>
+            <div id="jyzjbhl_1" style="width:100%;height:500px;margin-top: 50px"></div>
+            <a style="color: red" id="tag_bhl"></a>
+            <div style="width:100%;margin-top: 50px">
+                <table class="table mb-0">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>#</th>
+                        <th style="width: 20%" id="th_index"></th>
+                        <th style="width: 30%">近30天流通市值走势（千亿）</th>
+                        <th style="width: 30%">近30天流通市值变化率</th>
+                        <th style="width: 20%">当日变化率</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tb_zjlx">
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+        <script src="{{ url_for('static',filename='libs/sparkline/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='libs/echarts/echarts.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                type: 'GET',
+                url: '{{url_for("industry_analysis.api_get_date")}}',
+                dataType: 'json',
+                success: function (data) {
+                    for (var i in data) {
+                        var date = data[i].substr(0, 4) + '/' + data[i].substr(4, 2) + '/' + data[i].substr(6, 2);
+                        if (i == 0) {
+                            $('#time_list').append("<a class='nav-link mb-2 active' id='" + data[i] + "' v-pills-profile-tab' data-toggle='pill' role='tab' aria-controls='v-pills-profile' aria-selected='false'>" + date + "</a>");
+                        } else {
+                            $('#time_list').append("<a class='nav-link mb-2' id='" + data[i] + "' v-pills-profile-tab' data-toggle='pill' role='tab' aria-controls='v-pills-profile' aria-selected='false'>" + date + "</a>");
+                        }
+                    }
+                    var myChart_1 = echarts.init(document.getElementById('jyzjl_1'));
+                    myChart_1.hideLoading();
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_1")}}',
+                        data: {
+                            'date': data[0],
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_1 = {
+                                title: {
+                                    text: '今日不同行业分类下的流通市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    {#data: ['电子', '化工', '医药生物', '通讯', '机械设备', '国防军工', '休闲服务'],#}
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_1.setOption(option_1);
+                        }
+                    });
+                    $("#tag_1").text("注：横轴为行业分类，纵轴为该分类下当日参与交易股票的流通市值总量(千亿)。");
+
+                    var myChart_5 = echarts.init(document.getElementById('jyzjl_5'));
+                    myChart_5.hideLoading();
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n")}}',
+                        data: {
+                            'date': data.slice(0, 5),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_5 = {
+                                title: {
+                                    text: '近5日不同行业分类下的流通总市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                }
+                                ,
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_5.setOption(option_5);
+                        }
+                    });
+                    $("#tag_5").text("注：横轴为行业分类，纵轴为该分类下近5日参与交易股票的流通市值总量(千亿)。");
+
+                    var myChart_20 = echarts.init(document.getElementById('jyzjl_20'));
+                    myChart_20.hideLoading();
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n")}}',
+                        data: {
+                            'date': data.slice(0, 20),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_20 = {
+                                title: {
+                                    text: '近20日不同行业分类下的流通总市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                }
+                                ,
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_20.setOption(option_20);
+                        }
+                    });
+                    $("#tag_20").text("注：横轴为行业分类，纵轴为该分类下近20日参与交易股票的流通市值总量(千亿)。");
+
+                    var myChart_bhl_1 = echarts.init(document.getElementById('jyzjbhl_1'));
+                    myChart_bhl_1.hideLoading();
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjbhl")}}',
+                        data: {
+                            'date': data.slice(0, 2),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_bhl_1 = {
+                                title: {
+                                    text: '今日不同行业分类下的流通市值变化率'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value',
+                                    show: true,
+                                    min: function (value) {
+                                        return value.min - 0.1;
+                                    },
+                                    max: function (value) {
+                                        return value.max + 0.1;
+                                    }
+                                },
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_bhl_1.setOption(option_bhl_1);
+                        }
+                    });
+                    $("#tag_bhl").text("注：横轴为行业分类，纵轴为当日参与交易的流通市值总量相对于前一日的变化率(%)。");
+
+                    var num = 0;
+                    $("#th_index").text("行业");
+                    $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_tb_zjzs")}}',
+                        data: {
+                            'date': data[0],
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            for (var i in data) {
+                                num += 1;
+                                drbhl = Number(data[i][1]['jrbhl'] * 100).toFixed(1);
+                                drbhl += "%";
+                                var html = "<tr><th scope='row'>" + num + "</th><td>" + data[i][0] + "<td id='" + data[i][0] + "_zs" + "'></td><td id='" + data[i][0] + "_bhl" + "'></td><td id='" + data[i][0] + "_drbhl" + "'style='color: red'>" + drbhl + "</td></tr>"
+                                $('#tb_zjlx').append(html);
+                                var myChart_zs_1 = echarts.init(document.getElementById(data[i][0] + '_zs'));
+                                myChart_zs_1.hideLoading();
+                                option_zs_1 = {
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        formatter: function (params) {
+                                            return params[0]['value']+'千亿';
+                                        }
+                                    },
+                                    grid: {
+                                        x: 0,
+                                        y: 0,
+                                        //x2: 0,
+                                        y2: 0,
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                        show: false
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: false,
+                                        min: function (value) {
+                                            return value.min - 50;
+                                        },
+                                        max: function (value) {
+                                            return value.max + 50;
+                                        }
+                                    },
+                                    series: [{
+                                        data: data[i][1]['zjzs'],
+                                        type: 'line',
+                                        smooth: false,
+                                        areaStyle: {},
+                                    }]
+                                };
+                                myChart_zs_1.setOption(option_zs_1);
+                                window.onresize = function () {
+                                    myChart_zs_1.resize();
+                                };
+                                var myChart_bhl_1 = echarts.init(document.getElementById(data[i][0] + '_bhl'));
+                                myChart_bhl_1.hideLoading();
+                                option_bhl_1 = {
+                                    grid: {
+                                        x: 0,
+                                        y: 0,
+                                        //x2: 0,
+                                        y2: 0,
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                        show: false
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: false,
+                                    },
+                                    series: [{
+                                        data: data[i][1]['zjbhl'],
+                                        type: 'bar',
+                                        itemStyle: {
+                                            normal: {
+                                                color: function (params) {
+                                                    if (params.value > 0) {
+                                                        return 'red'
+                                                    } else {
+                                                        return 'green'
+                                                    }
+                                                },
+                                            }
+                                        },
+                                    }]
+                                };
+                                myChart_bhl_1.setOption(option_bhl_1);
+                                window.onresize = function () {
+                                    myChart_bhl_1.resize();
+                                };
+                            }
+                        }
+                    })
+                    $("#button_region").click(function (params) {
+                        $("#th_index").text("地域");
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_1_region")}}',
+                            data: {
+                                'date': data[0],
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_1 = {
+                                    title: {
+                                        text: '今日不同地域分类下的流通市值'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['region_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    },
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_1.setOption(option_1);
+                                $("#tag_1").text("注：横轴为地域分类，纵轴为该分类下当日参与交易股票的流通市值总量(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n_region")}}',
+                            data: {
+                                'date': data.slice(0, 5),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_5 = {
+                                    title: {
+                                        text: '近5日不同地域分类下的总流通市值'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['region_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    }
+                                    ,
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_5.setOption(option_5);
+                                $("#tag_5").text("注：横轴为地域分类，纵轴为该分类下近5日参与交易股票的总流通市值(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n_region")}}',
+                            data: {
+                                'date': data.slice(0, 20),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_20 = {
+                                    title: {
+                                        text: '近20日不同地域分类下的总流通市值'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['region_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    }
+                                    ,
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_20.setOption(option_20);
+                                $("#tag_20").text("注：横轴为地域分类，纵轴为该分类下近20日参与交易股票的总流通市值(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjbhl_region")}}',
+                            data: {
+                                'date': data.slice(0, 2),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_bhl_1 = {
+                                    title: {
+                                        text: '今日不同地域分类下的流通市值变化率'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['region_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: true,
+                                        min: function (value) {
+                                            return value.min - 0.1;
+                                        },
+                                        max: function (value) {
+                                            return value.max + 0.1;
+                                        }
+                                    },
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top'
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_bhl_1.setOption(option_bhl_1);
+                                $("#tag_bhl").text("注：横轴为地域分类，纵轴为当日参与交易的流通市值总量相对于前一日的变化率(%)。");
+                            }
+                        });
+                        $("#tb_zjlx").html("");
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_tb_zjzs_region")}}',
+                            data: {
+                                'date': data[0],
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                num = 0;
+                                for (var i in data) {
+                                    num += 1;
+                                    drbhl = Number(data[i][1]['jrbhl'] * 100).toFixed(1);
+                                    drbhl += "%";
+                                    var html = "<tr><th scope='row'>" + num + "</th><td>" + data[i][0] + "<td id='" + data[i][0] + "_zs" + "'></td><td id='" + data[i][0] + "_bhl" + "'></td><td id='" + data[i][0] + "_drbhl" + "'style='color: red'>" + drbhl + "</td></tr>"
+                                    $('#tb_zjlx').append(html);
+                                    var myChart_zs_1 = echarts.init(document.getElementById(data[i][0] + '_zs'));
+                                    myChart_zs_1.hideLoading();
+                                    option_zs_1 = {
+                                        tooltip: {
+                                            trigger: 'axis',
+                                            formatter: function (params) {
+                                                return params[0]['value'] + '亿';
+                                            }
+                                        },
+                                        grid: {
+                                            x: 0,
+                                            y: 0,
+                                            //x2: 0,
+                                            y2: 0,
+                                        },
+                                        xAxis: {
+                                            type: 'category',
+                                            data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                            show: false
+                                        },
+                                        yAxis: {
+                                            type: 'value',
+                                            show: false,
+                                            min: function (value) {
+                                                return value.min - 50;
+                                            },
+                                            max: function (value) {
+                                                return value.max + 50;
+                                            }
+                                        },
+                                        series: [{
+                                            data: data[i][1]['zjzs'],
+                                            type: 'line',
+                                            smooth: false,
+                                            areaStyle: {},
+                                        }]
+                                    };
+                                    myChart_zs_1.setOption(option_zs_1);
+                                    window.onresize = function () {
+                                        myChart_zs_1.resize();
+                                    };
+                                    var myChart_bhl_1 = echarts.init(document.getElementById(data[i][0] + '_bhl'));
+                                    myChart_bhl_1.hideLoading();
+                                    option_bhl_1 = {
+                                        grid: {
+                                            x: 0,
+                                            y: 0,
+                                            //x2: 0,
+                                            y2: 0,
+                                        },
+                                        xAxis: {
+                                            type: 'category',
+                                            data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                            show: false
+                                        },
+                                        yAxis: {
+                                            type: 'value',
+                                            show: false,
+                                        },
+                                        series: [{
+                                            data: data[i][1]['zjbhl'],
+                                            type: 'bar',
+                                            itemStyle: {
+                                                normal: {
+                                                    color: function (params) {
+                                                        if (params.value > 0) {
+                                                            return 'red'
+                                                        } else {
+                                                            return 'green'
+                                                        }
+                                                    },
+                                                }
+                                            },
+                                        }]
+                                    };
+                                    myChart_bhl_1.setOption(option_bhl_1);
+                                    window.onresize = function () {
+                                        myChart_bhl_1.resize();
+                                    };
+                                }
+                            }
+                        });
+                    });
+                    $("#button_concept").click(function (params) {
+                        $("#th_index").text("概念");
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_1_conceptual")}}',
+                            data: {
+                                'date': data[0],
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_1 = {
+                                    title: {
+                                        text: '今日不同概念分类下的流通市值'
+                                    },
+                                    grid: {
+                                        bottom: '16%'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['conceptual_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    },
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_1.setOption(option_1);
+                                $("#tag_1").text("注：横轴为概念分类，纵轴为该分类下当日参与交易股票的流通市值总量(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n_conceptual")}}',
+                            data: {
+                                'date': data.slice(0, 5),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_5 = {
+                                    title: {
+                                        text: '近5日不同概念分类下的总流通市值'
+                                    },
+                                    grid: {
+                                        bottom: '16%'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['conceptual_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    }
+                                    ,
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                                textStyle: {
+                                                    "fontSize": 10
+                                                }
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_5.setOption(option_5);
+                                $("#tag_5").text("注：横轴为概念分类，纵轴为该分类下近5日参与交易股票的总流通市值(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n_conceptual")}}',
+                            data: {
+                                'date': data.slice(0, 20),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_20 = {
+                                    title: {
+                                        text: '近20日不同概念分类下的总流通市值'
+                                    },
+                                    grid: {
+                                        bottom: '16%'
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['conceptual_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value'
+                                    }
+                                    ,
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top',
+                                                textStyle: {
+                                                    "fontSize": 9
+                                                }
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_20.setOption(option_20);
+                                $("#tag_20").text("注：横轴为概念分类，纵轴为该分类下近20日参与交易股票的总流通市值(千亿)。");
+                            }
+                        });
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_cndtqj_jyzjbhl_conceptual")}}',
+                            data: {
+                                'date': data.slice(0, 2),
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data_1) {
+                                option_bhl_1 = {
+                                    title: {
+                                        text: '今日不同概念分类下的流通市值变化率'
+                                    },
+                                    grid:{
+                                        bottom:"16%",
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: data_1['conceptual_name'],
+                                        axisLabel: {
+                                            interval: 0,
+                                            rotate: 40,
+                                            textStyle: {
+                                                color:
+                                                    function (value, index) {
+                                                        if (index < 5) {
+                                                            return 'red';
+                                                        } else if (index > 27) {
+                                                            return 'green';
+                                                        } else {
+                                                            return 'black'
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: true,
+                                        min: function (value) {
+                                            return value.min - 0.1;
+                                        },
+                                        max: function (value) {
+                                            return value.max + 0.1;
+                                        }
+                                    },
+                                    series: [{
+                                        data: data_1['cur_market_value'],
+                                        type: 'bar',
+                                        label: {
+                                            normal: {
+                                                show: true,
+                                                position: 'top'
+                                            },
+                                        },
+                                        markLine: {
+                                            data: [
+                                                {type: 'average', name: '平均值'}
+                                            ],
+                                        },
+                                    }],
+                                };
+                                myChart_bhl_1.setOption(option_bhl_1);
+                                $("#tag_bhl").text("注：横轴为概念分类，纵轴为当日参与交易的流通市值总量相对于前一日的变化率(%)。");
+                            }
+                        });
+                        $("#tb_zjlx").html("");
+                        $.ajax({
+                            type: 'GET',
+                            url: '{{url_for("industry_analysis.api_tb_zjzs_conceptual")}}',
+                            data: {
+                                'date': data[0],
+                                'index': 'cur_market_value'
+                            },
+                            dataType: 'json',
+                            success: function (data) {
+                                num = 0;
+                                console.log(data)
+                                for (var i in data) {
+                                    num += 1;
+                                    drbhl = Number(data[i][1]['jrbhl'] * 100).toFixed(1);
+                                    drbhl += "%";
+                                    var html = "<tr><th scope='row'>" + num + "</th><td>" + data[i][0] + "<td id='" + data[i][0] + "_zs" + "'></td><td id='" + data[i][0] + "_bhl" + "'></td><td id='" + data[i][0] + "_drbhl" + "'style='color: red'>" + drbhl + "</td></tr>"
+                                    $('#tb_zjlx').append(html);
+                                    var myChart_zs_1 = echarts.init(document.getElementById(data[i][0] + '_zs'));
+                                    myChart_zs_1.hideLoading();
+                                    option_zs_1 = {
+                                        tooltip: {
+                                            trigger: 'axis',
+                                            formatter: function (params) {
+                                                return params[0]['value'] + '亿';
+                                            }
+                                        },
+                                        grid: {
+                                            x: 0,
+                                            y: 0,
+                                            //x2: 0,
+                                            y2: 0,
+                                        },
+                                        xAxis: {
+                                            type: 'category',
+                                            data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                            show: false
+                                        },
+                                        yAxis: {
+                                            type: 'value',
+                                            show: false,
+                                            min: function (value) {
+                                                return value.min - 50;
+                                            },
+                                            max: function (value) {
+                                                return value.max + 50;
+                                            }
+                                        },
+                                        series: [{
+                                            data: data[i][1]['zjzs'],
+                                            type: 'line',
+                                            smooth: false,
+                                            areaStyle: {},
+                                        }]
+                                    };
+                                    myChart_zs_1.setOption(option_zs_1);
+                                    window.onresize = function () {
+                                        myChart_zs_1.resize();
+                                    };
+                                    var myChart_bhl_1 = echarts.init(document.getElementById(data[i][0] + '_bhl'));
+                                    myChart_bhl_1.hideLoading();
+                                    option_bhl_1 = {
+                                        grid: {
+                                            x: 0,
+                                            y: 0,
+                                            //x2: 0,
+                                            y2: 0,
+                                        },
+                                        xAxis: {
+                                            type: 'category',
+                                            data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                            show: false
+                                        },
+                                        yAxis: {
+                                            type: 'value',
+                                            show: false,
+                                        },
+                                        series: [{
+                                            data: data[i][1]['zjbhl'],
+                                            type: 'bar',
+                                            itemStyle: {
+                                                normal: {
+                                                    color: function (params) {
+                                                        if (params.value > 0) {
+                                                            return 'red'
+                                                        } else {
+                                                            return 'green'
+                                                        }
+                                                    },
+                                                }
+                                            },
+                                        }]
+                                    };
+                                    myChart_bhl_1.setOption(option_bhl_1);
+                                    window.onresize = function () {
+                                        myChart_bhl_1.resize();
+                                    };
+                                }
+                            }
+                        });
+                    });
+                    $("#button_industry").click(function (params) {
+                        $("#th_index").text("行业");
+                        $("#tb_zjlx").html("");
+                        $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_1")}}',
+                        data: {
+                            'date': data[0],
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_1 = {
+                                title: {
+                                    text: '今日不同行业分类下的流通市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    {#data: ['电子', '化工', '医药生物', '通讯', '机械设备', '国防军工', '休闲服务'],#}
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_1.setOption(option_1);
+                        }
+                    });
+                        $("#tag_1").text("注：横轴为行业分类，纵轴为该分类下当日参与交易股票的流通市值总量(千亿)。");
+                        $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n")}}',
+                        data: {
+                            'date': data.slice(0, 5),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_5 = {
+                                title: {
+                                    text: '近5日不同行业分类下的总流通市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                }
+                                ,
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_5.setOption(option_5);
+                        }
+                    });
+                        $("#tag_5").text("注：横轴为行业分类，纵轴为该分类下近5日参与交易股票的总流通市值(千亿)。");
+                        $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjl_n")}}',
+                        data: {
+                            'date': data.slice(0, 20),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_20 = {
+                                title: {
+                                    text: '近20日不同行业分类下的总流通市值'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value'
+                                }
+                                ,
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top',
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_20.setOption(option_20);
+                        }
+                    });
+                        $("#tag_20").text("注：横轴为行业分类，纵轴为该分类下近20日参与交易股票的总流通市值(千亿)。");
+                        $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_cndtqj_jyzjbhl")}}',
+                        data: {
+                            'date': data.slice(0, 2),
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option_bhl_1 = {
+                                title: {
+                                    text: '今日不同行业分类下的流通市值变化率'
+                                },
+                                xAxis: {
+                                    type: 'category',
+                                    data: data_1['industry_name'],
+                                    axisLabel: {
+                                        interval: 0,
+                                        rotate: 40,
+                                        textStyle: {
+                                            color:
+                                                function (value, index) {
+                                                    if (index < 5) {
+                                                        return 'red';
+                                                    } else if (index > 22) {
+                                                        return 'green';
+                                                    } else {
+                                                        return 'black'
+                                                    }
+                                                }
+                                        }
+                                    }
+                                },
+                                yAxis: {
+                                    type: 'value',
+                                    show: true,
+                                    min: function (value) {
+                                        return value.min - 0.1;
+                                    },
+                                    max: function (value) {
+                                        return value.max + 0.1;
+                                    }
+                                },
+                                series: [{
+                                    data: data_1['cur_market_value'],
+                                    type: 'bar',
+                                    label: {
+                                        normal: {
+                                            show: true,
+                                            position: 'top'
+                                        },
+                                    },
+                                    markLine: {
+                                        data: [
+                                            {type: 'average', name: '平均值'}
+                                        ],
+                                    },
+                                }],
+                            };
+                            myChart_bhl_1.setOption(option_bhl_1);
+                        }
+                    });
+                        $("#tag_bhl").text("注：横轴为行业分类，纵轴为当日参与交易流通市值总量相对于前一日的变化率(%)。");
+                        $.ajax({
+                        type: 'GET',
+                        url: '{{url_for("industry_analysis.api_tb_zjzs")}}',
+                        data: {
+                            'date': data[0],
+                            'index': 'cur_market_value'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            num = 0;
+                            for (var i in data) {
+                                num += 1;
+                                drbhl = Number(data[i][1]['jrbhl'] * 100).toFixed(1);
+                                drbhl += "%";
+                                var html = "<tr><th scope='row'>" + num + "</th><td>" + data[i][0] + "<td id='" + data[i][0] + "_zs" + "'></td><td id='" + data[i][0] + "_bhl" + "'></td><td id='" + data[i][0] + "_drbhl" + "'style='color: red'>" + drbhl + "</td></tr>"
+                                $('#tb_zjlx').append(html);
+                                var myChart_zs_1 = echarts.init(document.getElementById(data[i][0] + '_zs'));
+                                myChart_zs_1.hideLoading();
+                                option_zs_1 = {
+                                    tooltip: {
+                                        trigger: 'axis',
+                                        formatter: function (params) {
+                                            return params[0]['value'] + '亿';
+                                        }
+                                    },
+                                    grid: {
+                                        x: 0,
+                                        y: 0,
+                                        //x2: 0,
+                                        y2: 0,
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                        show: false
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: false,
+                                        min: function (value) {
+                                            return value.min - 50;
+                                        },
+                                        max: function (value) {
+                                            return value.max + 50;
+                                        }
+                                    },
+                                    series: [{
+                                        data: data[i][1]['zjzs'],
+                                        type: 'line',
+                                        smooth: false,
+                                        areaStyle: {},
+                                    }]
+                                };
+                                myChart_zs_1.setOption(option_zs_1);
+                                window.onresize = function () {
+                                    myChart_zs_1.resize();
+                                };
+                                var myChart_bhl_1 = echarts.init(document.getElementById(data[i][0] + '_bhl'));
+                                myChart_bhl_1.hideLoading();
+                                option_bhl_1 = {
+                                    grid: {
+                                        x: 0,
+                                        y: 0,
+                                        //x2: 0,
+                                        y2: 0,
+                                    },
+                                    xAxis: {
+                                        type: 'category',
+                                        data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'],
+                                        show: false
+                                    },
+                                    yAxis: {
+                                        type: 'value',
+                                        show: false,
+                                    },
+                                    series: [{
+                                        data: data[i][1]['zjbhl'],
+                                        type: 'bar',
+                                        itemStyle: {
+                                            normal: {
+                                                color: function (params) {
+                                                    if (params.value > 0) {
+                                                        return 'red'
+                                                    } else {
+                                                        return 'green'
+                                                    }
+                                                },
+                                            }
+                                        },
+                                    }]
+                                };
+                                myChart_bhl_1.setOption(option_bhl_1);
+                                window.onresize = function () {
+                                    myChart_bhl_1.resize();
+                                };
+                            }
+                        }
+                    });
+                    });
+
+
+                }
+            });
+
+        });
+
+
+    </script>
+{% endblock %}

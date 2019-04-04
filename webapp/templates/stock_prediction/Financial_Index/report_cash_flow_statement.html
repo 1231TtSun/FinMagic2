@@ -1,0 +1,231 @@
+{%extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    {{ super() }}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                   <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                                        <a class="nav-link mb-2" href="{{url_for('stock_prediction.zycwzb')}} ">
+                        主要财务指标</a>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.ylnl')}}">
+                        盈利能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.chnl')}}" >
+                        偿还能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.cznl')}}">
+                        成长能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.yynl')}}" >
+                        运营能力</a>
+                     <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.lrbzy')}}">
+                        利润表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.zcfzbzy')}}" >
+                        资产负债表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.xjjlbzy')}}" >
+                        现金流量表摘要</a>
+                    <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link active show mb-2"  href="{{url_for('stock_prediction.cwbg')}}">
+                        财务报告</a>
+                </div>
+            </div> <!-- end row-->
+        </div>
+            <div class="col-8">
+                <div class="card-box" style="width: 70%" >
+                <ul class="nav nav-pills navtab-bg nav-justified" >
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg')}}" aria-expanded="false" class="nav-link">
+                            综合指标
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_lrb')}}" aria-expanded="false" class="nav-link">
+                            利润表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_zcfzb')}}" aria-expanded="false" class="nav-link">
+                            资产负债表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_xjllb')}}" aria-expanded="false" class="nav-link active">
+                            现金流量表
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb')}}"
+                                   class="nav-link active">按报告期</a>
+                            </li>
+                            <li class="nav-item">
+{#                                href="{{url_for('main.zycwzb_year')}}"#}
+                                <a class="nav-link">按年度</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="home1"></div>
+                            <div class="tab-pane show active" id="profile1"></div>
+                            <div class="tab-pane" id="messages1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    <form>
+        <table id="table-zhzb" width="100%" align="left" border="0">
+            <td style="width: 28%">
+                <table>
+            <tr id="date">
+                <td  style="border: #fff solid 1px;height:8px;background: rgba(249,191,190,0.74);padding: 10px 10px;font-size: 14px;text-align: right;width: 27%"><b>项目/报告期</b></td>
+
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right;width:23%">
+                    销售商品、提供劳务收到的现金
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">收到的税费返还</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">收到其他与经营活动有关的现金</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">经营活动现金流入小计</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    购买商品、接受劳务支付的现金
+                </td>
+            </tr>
+              <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">支付给职工以及为职工支付的现金</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">支付的各项税费</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">支付其他与经营活动有关的现金</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    经营活动现金流出小计
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">经营活动产生的现金流量净额</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    收回投资收到的现金
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">取得投资收益收到的现金</td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 4px;font-size: 14px;text-align: right">处置固定资产、无形资产和其他长期资产收回的现金净额</td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">
+                    处置子公司及其他营业单位收到的现金净额
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">收到其他与投资活动有关的现金</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">投资活动现金流入小计</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">购建固定资产、无形资产和其他长期资产支付的现金</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">投资支付的现金</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">取得子公司及其他营业单位支付的现金净额</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">支付其他与投资活动有关的现金</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">投资活动现金流出小计</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">投资活动产生的现金流量净额</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">取得借款收到的现金</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">收到其他与筹资活动有关的现金</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">筹资活动现金流入小计</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">偿还债务支付的现金</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">分配股利、利润或偿还利息支付的现金</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">支付其他与筹资活动有关的现金</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">筹资活动现金流出小计</td>
+            </tr> <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">筹资活动产生的现金流量净额</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">四、汇率变动对现金的影响</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">其他原因对现金的影响</td>
+            </tr>
+                     <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">五、现金及现金等价物净增加额</td>
+            </tr> <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">期初现金及现金等价物余额</td>
+            </tr> <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">期初现金及现金等价物余额</td>
+            </tr>
+
+                </table></td>
+             <td style="width: 5%">
+                 <table id="111" ></table></td>
+             <td style="width: 5%">
+                 <table id="222" ></table></td>
+            <td style="width: 5%">
+                <table id="333"></table></td>
+            <td style="width: 5%">
+                <table id="444" ></table></td>
+            <td style="width: 5%">
+                <table id="555" ></table></td>
+            <td style="width: 5%">
+                <table id="666"></table></td>
+        </table>
+    </form>
+</div>
+        </div>
+    </div>
+
+{% endblock %}

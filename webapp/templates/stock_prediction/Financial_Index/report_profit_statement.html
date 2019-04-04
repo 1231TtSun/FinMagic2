@@ -1,0 +1,195 @@
+{%extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                   <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                                        <a class="nav-link mb-2" href="{{url_for('stock_prediction.zycwzb')}} ">
+                        主要财务指标</a>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.ylnl')}}">
+                        盈利能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.chnl')}}" >
+                        偿还能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.cznl')}}">
+                        成长能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.yynl')}}" >
+                        运营能力</a>
+                     <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.lrbzy')}}">
+                        利润表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.zcfzbzy')}}" >
+                        资产负债表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.xjjlbzy')}}" >
+                        现金流量表摘要</a>
+                    <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link active show mb-2"  href="{{url_for('stock_prediction.cwbg')}}">
+                        财务报告</a>
+                </div>
+            </div> <!-- end row-->
+        </div>
+            <div class="col-8">
+                <div class="card-box" style="width: 70%" >
+                <ul class="nav nav-pills navtab-bg nav-justified" >
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg')}}" aria-expanded="false" class="nav-link">
+                            综合指标
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_lrb')}}" aria-expanded="false" class="nav-link active">
+                            利润表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_zcfzb')}}" aria-expanded="false" class="nav-link">
+                            资产负债表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_xjllb')}}" aria-expanded="false" class="nav-link">
+                            现金流量表
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb')}}"
+                                   class="nav-link active">按报告期</a>
+                            </li>
+                            <li class="nav-item">
+{#                                href="{{url_for('main.zycwzb_year')}}"#}
+                                <a class="nav-link">按年度</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="home1"></div>
+                            <div class="tab-pane show active" id="profile1"></div>
+                            <div class="tab-pane" id="messages1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+    <form>
+        <table id="table-zhzb" width="100%" align="left" border="0">
+            <td style="width: 28%">
+                <table>
+            <tr id="date">
+                <td  style="border: #fff solid 1px;height:8px;background: rgba(249,191,190,0.74);padding: 10px 10px;font-size: 14px;text-align: right;width: 27%"><b>项目/报告期</b></td>
+
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right;width:23%">
+                    一、营业收入
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">减：营业成本</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">营业税金及附加</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">销售费用</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    管理费用
+                </td>
+            </tr>
+              <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">勘探费用</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">财务费用</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">资产减值损失</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    加：公允价值变动净收益
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">投资收益</td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    其中：对联营企业和合营企业的投资权益
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">影响营业利润的其他科目</td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">二、营业利润</td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">
+                    加：补贴收入
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">营业外收入</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">减：营业外支出</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">其中：非流动资产处置净损失</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">加：影响利润总额的其他科目</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">三、利润总额</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">减：影响净利润的其他科目</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">四、净利润</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">归属于母公司所有者的净利润</td>
+            </tr>
+                    <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">少数股东损益</td>
+            </tr>
+                </table></td>
+             <td style="width: 5%">
+                 <table id="111" ></table></td>
+             <td style="width: 5%">
+                 <table id="222" ></table></td>
+            <td style="width: 5%">
+                <table id="333"></table></td>
+            <td style="width: 5%">
+                <table id="444" ></table></td>
+            <td style="width: 5%">
+                <table id="555" ></table></td>
+            <td style="width: 5%">
+                <table id="666"></table></td>
+        </table>
+    </form>
+</div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "main/main_base.html" %}
+{% block content %}
+    <!-- HOME -->
+    <section>
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+
+                        <div class="wrapper-page">
+                            <div class="account-pages">
+                                <div class="account-box bg-transparent shadow-none">
+
+                                    <!-- Logo Box -->
+                                    <div class="account-logo-box">
+                                        <h2 class="text-uppercase text-center">
+                                            <a href="index.html" class="text-success">
+                                                <span><img src="{{ url_for('static',filename='images/logo.png') }}" alt="" height="28"></span>
+                                            </a>
+                                        </h2>
+                                    </div>
+
+                                    <div class="account-content text-center">
+                                        <h1 class="text-error">400</h1>
+                                        <h4 class="text-uppercase text-danger mt-3">请求无效</h4>
+                                        <p class="text-white-50 mt-3">{{ reason }}</p>
+                                        <p class="text-white-50 mt-3">由于语法格式有误，服务器无法理解此请求，点击下面的按钮返回主页</p>
+
+                                        <a class="btn btn-primary mt-3" href="{{ url_for('main.index') }}"><i class="mdi mdi-home mr-1"></i> 返回主页</a>
+                                    </div> <!-- end account-content -->
+
+                                </div> <!-- end account-box -->
+                            </div>
+                            <!-- end account-page-->
+                        </div>
+                        <!-- end wrapper-page -->
+
+                    </div> <!-- end col -->
+                </div> <!-- end row -->
+            </div> <!-- end container -->
+        </section>
+    <!-- END HOME -->
+{% endblock %}

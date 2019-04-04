@@ -1,0 +1,190 @@
+{%extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                  <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                                        <a class="nav-link mb-2" href="{{url_for('stock_prediction.zycwzb')}} ">
+                        主要财务指标</a>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.ylnl')}}">
+                        盈利能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.chnl')}}" >
+                        偿还能力</a>
+                    <a class="nav-link active show mb-2"
+                       href="{{url_for('stock_prediction.cznl')}}">
+                        成长能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.yynl')}}" >
+                        运营能力</a>
+                     <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.lrbzy')}}">
+                        利润表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.zcfzbzy')}}" >
+                        资产负债表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.xjjlbzy')}}" >
+                        现金流量表摘要</a>
+                    <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.cwbg')}}">
+                        财务报告</a>
+                </div>
+            </div> <!-- end row-->
+        </div>
+            <div class="col-8">
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="#profile1" data-toggle="tab" aria-expanded="true"
+                                   class="nav-link active">按报告期</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#messages1" data-toggle="tab" aria-expanded="false" class="nav-link">按年度</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="home1"></div>
+                            <div class="tab-pane show active" id="profile1"></div>
+                            <div class="tab-pane" id="messages1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+<div id="container" style="height: 600px;width: 100%;float: right"></div>
+        </div>
+    </div>
+
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+       <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom);
+option = null;
+$.ajax({
+                        type: 'GET',
+                        url: '{{url_for("stock_prediction.api_cwzb_cznl")}}',
+                        data: {
+                            'ts_code': '000001'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option = {
+                                title: {
+                                    text: '平安银行（000001）-成长能力走势图',
+                                    subtext: '魔法金融\n'
+                                },
+                                 tooltip : {
+                                    trigger: 'axis'
+                                 },
+                                grid:{
+                                    top:"15%",
+                                    bottom:"20%",
+                                    left:"5%"
+                                },
+                                legend: [
+                                    {
+                                        x:'0%',
+                                        y:'7%',
+                                        align:'left',
+                                        data:['主营业务收入增长率（%）'],
+                                        selected:{
+                                            '主营业务收入增长率（%）':false
+                                        }
+                                        },
+                                    {
+            x:'23%',
+            y:'7%',
+            align:'left',
+            data:['净利润增长率（%）'],
+        },
+         {
+            x:'42%',
+            y:'7%',
+            align:'left',
+            data:['净资产增长率（%）'],
+        },
+         {
+            x:'60%',
+            y:'7%',
+            align:'left',
+            data:['总资产增长率（%）'],
+             selected:{
+                '总资产增长率（%）':false
+            }
+        },
+                                    ],
+                                toolbox: {
+                                    show : true,
+                                    feature : {
+                                        magicType : {show: true, type: ['line', 'bar']},
+                                        restore : {show: true},
+                                        saveAsImage : {show: true}
+                                    }
+                                    },
+                                calculable : true,
+                                 xAxis : [
+                                     {
+                                         type : 'category',
+                                         data : data_1['date'],
+                                         axisLabel:{
+                                             interval:0,
+                                             rotate:270
+                                         },
+                                         textStyle:{
+                                             fontSize:20
+                                         }
+                                     }
+                                     ],
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                 series : [
+                                     {
+                                         name:'主营业务收入增长率（%）',
+                                         type:'bar',
+                                         data:data_1['growth_rate_main_business_income'],
+                                     },
+                                      {
+            name:'净利润增长率（%）',
+            type:'bar',
+            data:data_1['growth_rate_net_profit'],
+        },
+         {
+            name:'净资产增长率（%）',
+            type:'bar',
+            data:data_1['growth_rate_net_assets'],
+
+        },
+         {
+            name:'总资产增长率（%）',
+            type:'bar',
+            data:data_1['growth_rate_tot_assets'],
+
+        },
+                                 ]
+                            };
+                            myChart.setOption(option);
+                        }
+                    });
+</script>
+{% endblock %}

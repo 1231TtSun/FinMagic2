@@ -1,0 +1,411 @@
+{%extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                   <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                                        <a class="nav-link active show mb-2" href="{{url_for('stock_prediction.zycwzb')}} ">
+                        主要财务指标</a>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.ylnl')}}">
+                        盈利能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.chnl')}}" >
+                        偿还能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.cznl')}}">
+                        成长能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.yynl')}}" >
+                        运营能力</a>
+                     <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.lrbzy')}}">
+                        利润表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.zcfzbzy')}}" >
+                        资产负债表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.xjjlbzy')}}" >
+                        现金流量表摘要</a>
+                    <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.cwbg')}}">
+                        财务报告</a>
+                </div>
+            </div> <!-- end row-->
+        </div>
+            <div class="col-8">
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb')}}"
+                                   class="nav-link">按报告期</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb_year')}}"  class="nav-link active">按年度</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="home1"></div>
+                            <div class="tab-pane show active" id="profile1"></div>
+                            <div class="tab-pane" id="messages1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+<div id="container" style="height: 800px;width: 100%;float: right"></div>
+        </div>
+    </div>
+
+
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-gl/echarts-gl.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts-stat/ecStat.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/dataTool.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/china.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/extension/bmap.min.js"></script>
+       <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/simplex.js"></script>
+       <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+var dom = document.getElementById("container");
+var myChart = echarts.init(dom);
+option = null;
+$.ajax({
+                        type: 'GET',
+                        url: '{{url_for("stock_prediction.api_cwzb_zycwzb_year")}}',
+                        data: {
+                            'ts_code': '000001.SZ'
+                        },
+                        dataType: 'json',
+                        success: function (data_1) {
+                            option = {
+                                title: {
+                                    text: '平安银行（000001）-主要财务指标走势图',
+                                    subtext: '魔法金融\n'
+                                },
+                                 tooltip : {
+                                    trigger: 'axis'
+                                 },
+                                grid:{
+                                    top:"30%",
+                                    bottom:"20%",
+                                    left:"15%"
+                                },
+                                legend: [
+                                    {
+                                        x:'0%',
+                                        y:'6%',
+                                        align:'left',
+                                        data:['基本每股收益（元）'],
+                                        selected:{
+                                            '基本每股收益（元）':false
+                                        }
+                                        },
+                                    {
+            x:'30%',
+            y:'6%',
+            align:'left',
+            data:['每股净资产（元）'],
+              selected:{
+                '每股净资产（元）':false
+            }
+        },
+         {
+            x:'64%',
+            y:'6%',
+            align:'left',
+            data:['每股经营活动产生的现金流量净额（元）'],
+             selected:{
+                '每股经营活动产生的现金流量净额（元）':false
+            }
+        },
+         {
+            x:'0%',
+            y:'9%',
+            align:'left',
+            data:['主营业务收入（万元）']
+        },
+         {
+            x:'30%',
+            y:'9%',
+            align:'left',
+            data:['主营业务利润（万元）']
+        },
+         {
+            x:'64%',
+            y:'9%',
+            align:'left',
+            data:['营业利润（万元）'],
+             selected:{
+                '营业利润（万元）':false
+            }
+        },
+         {
+            x:'0%',
+            y:'12%',
+            align:'left',
+            data:['投资收益（万元）'],
+              selected:{
+                '投资收益（万元）':false
+            }
+        },
+         {
+            x:'30%',
+            y:'12%',
+            align:'left',
+            data:['营业外收支净额（万元）'],
+              selected:{
+                '营业外收支净额（万元）':false
+            }
+        },
+         {
+            x:'64%',
+            y:'12%',
+            align:'left',
+            data:['利润总额（万元）'],
+             selected:{
+                '利润总额（万元）':false
+            }
+        },
+          {
+            x:'0%',
+            y:'15%',
+            align:'left',
+            data:['净利润（万元）']
+        },
+         {
+            x:'30%',
+            y:'15%',
+            align:'left',
+            data:['净利润（扣除非经常性损益后）（万元）'],
+             selected:{
+                '净利润（扣除非经常性损益后）（万元）':false
+            }
+        },
+         {
+            x:'64%',
+            y:'15%',
+            align:'left',
+            data:['经营活动产生的现金流量净额（万元）'],
+             selected:{
+                '经营活动产生的现金流量净额（万元）':false
+            }
+        },
+        {
+            x:'0%',
+            y:'18%',
+            align:'left',
+            data:['现金及现金等价物净增加额（万元）'],
+             selected:{
+                '现金及现金等价物净增加额（万元）':false
+            }
+        },
+         {
+            x:'30%',
+            y:'18%',
+            align:'left',
+            data:['总资产（万元）'],
+              selected:{
+                '总资产（万元）':false
+            }
+
+        },
+         {
+            x:'64%',
+            y:'18%',
+            align:'left',
+            data:['流动资产（万元）'],
+             selected:{
+                '流动资产（万元）':false
+            }
+        },
+        {
+            x:'0%',
+            y:'21%',
+            align:'left',
+            data:['总负债（万元）'],
+             selected:{
+                '总负债（万元）':false
+            }
+        },
+         {
+            x:'30%',
+            y:'21%',
+            align:'left',
+            data:['流动负债（万元）'],
+             selected:{
+                '流动负债（万元）':false
+            }
+        },
+         {
+            x:'64%',
+            y:'21%',
+            align:'left',
+            data:['股东权益不含少数股东权益（万元）'],
+              selected:{
+                '股东权益不含少数股东权益（万元）':false
+            }
+        },
+        {
+            x:'0%',
+            y:'24%',
+            align:'left',
+            data:['净资产收益率加权（%）']
+        }
+                                    ],
+                                toolbox: {
+                                    show : true,
+                                    feature : {
+                                        magicType : {show: true, type: ['line', 'bar']},
+                                        restore : {show: true},
+                                        saveAsImage : {show: true}
+                                    }
+                                    },
+                                calculable : true,
+                                 xAxis : [
+                                     {
+                                         type : 'category',
+                                         data : data_1['the_date'],
+                                         axisLabel:{
+                                             interval:0,
+                                             rotate:270
+                                         },
+                                         textStyle:{
+                                             fontSize:20
+                                         }
+                                     }
+                                     ],
+                                yAxis: {
+                                    type: 'value'
+                                },
+                                 series : [
+                                     {
+                                         name:'基本每股收益（元）',
+                                         type:'bar',
+                                         data:data_1['eps_basic_is'],
+                                     },
+                                      {
+            name:'每股净资产（元）',
+            type:'bar',
+            data:data_1['net_asset_per'],
+        },
+         {
+            name:'每股经营活动产生的现金流量净额（元）',
+            type:'bar',
+            data:data_1['net_cash_flows_oper_act_per'],
+
+        },
+         {
+            name:'主营业务收入（万元）',
+            type:'bar',
+            data:data_1['main_oper_rev'],
+
+        },
+         {
+            name:'主营业务利润（万元）',
+            type:'bar',
+            data:data_1['main_oper_profit'],
+
+        },
+         {
+            name:'营业利润（万元）',
+            type:'bar',
+            data:data_1['oper_profit'],
+
+        },
+         {
+            name:'投资收益（万元）',
+            type:'bar',
+            data:data_1['net_invest_inc'],
+
+        },
+         {
+            name:'营业外收支净额（万元）',
+            type:'bar',
+            data:data_1['net_non_oper_income'],
+
+        },
+         {
+            name:'利润总额（万元）',
+            type:'bar',
+            data:data_1['tot_profit'],
+
+        },
+         {
+            name:'净利润（万元）',
+            type:'bar',
+            data:data_1['net_profit_is'],
+
+        },
+         {
+            name:'净利润（扣除非经常性损益后）（万元）',
+            type:'bar',
+            data:data_1[' net_profit_is_excluded'],
+
+        },
+         {
+            name:'经营活动产生的现金流量净额（万元）',
+            type:'bar',
+            data:data_1['net_cash_flows_oper_act'],
+
+        },
+        {
+            name: '现金及现金等价物净增加额（万元）',
+            type:'bar',
+            data:data_1['net_incr_cash_cash_equ_dm'],
+
+        },
+         {
+            name:'总资产（万元）',
+            type:'bar',
+            data:data_1['tot_assets'],
+
+        }, {
+            name:'流动资产（万元）',
+            type:'bar',
+            data:data_1['tot_cur_assets'],
+
+        },
+         {
+            name:'总负债（万元）',
+            type:'bar',
+            data:data_1['tot_liab'],
+
+        },
+         {
+            name:'流动负债（万元）',
+            type:'bar',
+            data:data_1['tot_cur_liab'],
+
+        },
+         {
+            name:'股东权益不含少数股东权益（万元）',
+            type:'bar',
+            data:data_1['tot_equity'],
+
+        },
+         {
+            name:'净资产收益率加权（%）',
+            type:'bar',
+            data:data_1['rate_rec_on_net_asset'],
+
+        }
+                                 ]
+                            };
+                            myChart.setOption(option);
+                        }
+                    });
+</script>
+
+{% endblock %}

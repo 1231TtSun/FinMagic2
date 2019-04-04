@@ -1,0 +1,694 @@
+{% extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    <div class="row">
+        <div class="col-2 pl-5">
+            <div class="row">
+                <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                    {% for day in date_list %}
+                        {% if day==date %}
+                            <a class="nav-link active mb-2"
+                               href="{{ url_for('stock_prediction.comprehensive_analysis',code=stock.ts_code,date=day) }}">
+                                {{ "%s/%s/%s"|format(day[0:4],day[4:6],day[6:8]) }}
+                            </a>
+                        {% else %}
+                            <a class="nav-link mb-2"
+                               href="{{ url_for('stock_prediction.comprehensive_analysis',code=stock.ts_code,date=day) }}">
+                                {{ "%s/%s/%s"|format(day[0:4],day[4:6],day[6:8]) }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div> <!-- end row-->
+        </div>
+        <div class="col-10">
+            <div class="card">
+                <div class="card-header" style="font-size: 20px;font-weight: bold">
+                    基本行情({{ "%s/%s/%s"|format(date[0:4],date[4:6],date[6:8]) }})
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-2 text-center" style="font-size: 30px;font-weight:bold;color:#00A2C7">
+                            <p>{{ stock.name }}<br/>{{ stock.symbol }}</p>
+                        </div>
+                        <div class="col-10" id="today_data">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-2 text-center pt-3 pl-0 pr-0" style="font-size: 30px;font-weight:bold;"
+                             id="today_data_left">
+                        </div>
+                        <div class="col-10">
+                            <div class="row">
+                                今日一分钟走势：
+                                <div id="zs1min" style="height: 100px;width: 100%"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    近60天走势及高低点：
+                                    <div id="short_trend_chart"></div>
+                                    所属行业：<span id="industry"></span>
+                                </div>
+                                <div class="col-7">
+                                    近一年价格区间及当前位置
+                                    <div class="row" id="one_year_slider">
+                                        <span class="irs" style="width:90%;margin:0 auto;"><span class="irs"><span
+                                                class="irs-line" tabindex="-1"><span class="irs-line-left"></span><span
+                                                class="irs-line-mid"></span><span
+                                                class="irs-line-right"></span></span><span
+                                                class="irs-min">6.12</span> <span class="irs-max">13.08</span> <span
+                                                class="irs-from" style="left: 42%;">91.66%</span> </span><span
+                                                class="irs-slider" style="left: 95%;"></span> </span>
+                                    </div>
+                                    所属地域：<span id="area"></span>
+                                </div>
+                            </div>
+                            <div class="row col-12">所属概念：<span id="concept"></span></div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div id="k_line_chart" style="width: 100%;height: 600px"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header" style="font-size: 20px;font-weight: bold">
+                    股市雷达
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div id="stock_radar" style="width: 100%;height: 600px"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+{% block styles %}
+    <link href="{{ url_for('static',filename='assets/css/stock_prediction/slider.css') }}" rel="stylesheet"
+          type="text/css"/>
+{% endblock %}
+{% block page_scripts %}
+    <script src="{{ url_for('static',filename='libs/sparkline/jquery.sparkline.min.js') }}"></script>
+    <script src="{{ url_for('static',filename='libs/echarts/echarts.js') }}"></script>
+    <script>
+        $.ajax({
+            type: "GET",
+            url: "{{ url_for('stock_prediction.api_comprehensive_analysis') }}",
+            data: {code: stock, date: date},
+            dataType: "json",
+            success: function (r) {
+                show_today_data(r.today_bar_data, r.today_basic_data, r.one_year_data)
+                show_compay_concept(r.company_and_concept)
+                draw_short_trend_chart(r.short_trend_data)
+                draw_k_line_chart(r.k_line_data)
+                draw_radar_chart()
+            }
+        });
+
+        function draw_k_line_chart(rawdata) {
+            function splitData(rawData) {
+                var categoryData = [];
+                var values = [];
+                var volumes = [];
+                for (var i = 0; i < rawData.length; i++) {
+                    categoryData.push(rawData[i].splice(0, 1)[0]);
+                    values.push(rawData[i])
+                    volumes.push([i, rawData[i][4], rawData[i][1] > rawData[i][0] ? 1 : -1]);
+                }
+                return {
+                    categoryData: categoryData,
+                    values: values,
+                    volumes: volumes
+                };
+            }
+
+            var data = splitData(rawdata)
+            var myChart = echarts.init(document.getElementById('k_line_chart'));
+            var upColor = '#FF0099';
+            var downColor = '#1AB394';
+
+            function calculateMA(dayCount) {
+                var result = [];
+                for (var i = 0, len = data.values.length; i < len; i++) {
+                    if (i < dayCount) {
+                        result.push('-');
+                        continue;
+                    }
+                    var sum = 0;
+                    for (var j = 0; j < dayCount; j++) {
+                        sum += data.values[i - j][1];
+                    }
+                    result.push((sum / dayCount).toFixed(2));
+                }
+                return result;
+            }
+
+            function calculateMAV(dayCount) {
+                var result = [];
+                for (var i = 0, len = data.volumes.length; i < len; i++) {
+                    if (i < dayCount) {
+                        result.push('-');
+                        continue;
+                    }
+                    var sum = 0;
+                    for (var j = 0; j < dayCount; j++) {
+                        sum += data.volumes[i - j][1];
+                    }
+                    result.push((sum / dayCount).toFixed(2));
+                }
+                return result;
+            }
+
+            var option = {
+                title: {
+                    text: '{{ stock.name }}',
+                    left: 10
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'cross'
+                    }
+                },
+                axisPointer: {
+                    link: {xAxisIndex: 'all'},
+                    label: {
+                        backgroundColor: '#777'
+                    }
+                },
+                legend: {
+                    left: 'right',
+                    data: ['日K线', 'MA5', 'MA10', 'MA20', 'MA30', 'MA60', 'MA120'],
+                    selected: {'MA10': false, 'MA30': false}
+                },
+
+                visualMap: {
+                    show: false,
+                    seriesIndex: 0,
+                    dimension: 2,
+                    pieces: [{
+                        value: -1,
+                        color: downColor
+                    }, {
+                        value: 1,
+                        color: upColor
+                    }]
+                },
+                grid: [{
+                    left: '50',
+                    right: '15',
+                    top: '55',
+                    bottom: '75',
+                    height: '55%'
+                },
+                    {
+                        left: '50',
+                        right: '15',
+                        top: '65%',
+                        bottom: '75',
+                        height: '23%'
+                    }
+                ],
+                xAxis: [{
+                    type: 'category',
+                    data: data.categoryData,
+                    scale: true,
+                    boundaryGap: false,
+                    axisLine: {onZero: false},
+                    splitLine: {show: false},
+                    splitNumber: 20,
+                    min: 'dataMin',
+                    max: 'dataMax'
+                },
+                    {
+                        type: 'category',
+                        gridIndex: 1,
+                        data: data.categoryData,
+                        scale: true,
+                        boundaryGap: false,
+                        axisLine: {onZero: false},
+                        axisTick: {show: false},
+                        splitLine: {show: false},
+                        axisLabel: {show: false},
+                        splitNumber: 20,
+                        min: 'dataMin',
+                        max: 'dataMax'
+
+                    }
+                ],
+                yAxis: [{
+                    scale: true,
+                    splitArea: {
+                        show: true
+                    }
+                }, {
+                    scale: true,
+                    gridIndex: 1,
+                    splitNumber: 2,
+                    axisLabel: {show: false},
+                    axisLine: {show: false},
+                    axisTick: {show: false},
+                    splitLine: {show: false}
+                }
+                ],
+                dataZoom: [
+                    {
+                        type: 'inside',
+                        xAxisIndex: [0, 1],
+                        start: 45,
+                        end: 100
+                    },
+                    {
+                        show: true,
+                        xAxisIndex: [0, 1],
+                        type: 'slider',
+                        top: '90%',
+                        start: 45,
+                        end: 100
+                    }
+                ],
+                series: [
+
+                    {
+                        name: 'Volume',
+                        type: 'bar',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1,
+                        data: data.volumes
+                    },
+                    {
+                        name: 'MA5',
+                        type: 'line',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1,
+                        data: calculateMAV(5),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+//         {
+//            name: 'MA20',
+//            type: 'line',
+//            xAxisIndex: 1,
+//            yAxisIndex: 1,
+//            data: calculateMAV(20),
+//            smooth: true,
+//            lineStyle: {
+//                normal: { opacity: 0.5 }
+//            }
+//          },
+                    {
+                        name: 'MA60',
+                        type: 'line',
+                        xAxisIndex: 1,
+                        yAxisIndex: 1,
+                        data: calculateMAV(60),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: '日K线',
+                        type: 'candlestick',
+                        data: data.values,
+                        itemStyle: {
+                            normal: {
+                                color: upColor,
+                                color0: downColor,
+                                borderColor: null,
+                                borderColor0: null
+                            }
+                        },
+                        markPoint: {
+                            label: {
+                                normal: {
+                                    formatter: function (param) {
+                                        return param != null ? Math.round(param.value) : '';
+                                    }
+                                }
+                            },
+                            data: [
+
+                                {
+                                    name: '最高点',
+                                    type: 'max',
+                                    valueDim: 'highest'
+                                },
+                                {
+                                    name: '最低点',
+                                    type: 'min',
+                                    valueDim: 'lowest'
+                                }
+                            ],
+                            tooltip: {
+                                formatter: function (param) {
+                                    return param.name + '<br>' + (param.data.coord || '');
+                                }
+                            }
+                        },
+                        markLine: {
+                            symbol: ['none', 'none'],
+                            data: [
+                                [
+                                    {
+                                        name: '从低到高',
+                                        type: 'min',
+                                        valueDim: 'lowest',
+                                        symbol: 'circle',
+                                        symbolSize: 10,
+                                        label: {
+                                            normal: {show: false},
+                                            emphasis: {show: false}
+                                        }
+                                    },
+                                    {
+                                        type: 'max',
+                                        valueDim: 'highest',
+                                        symbol: 'circle',
+                                        symbolSize: 10,
+                                        label: {
+                                            normal: {show: false},
+                                            emphasis: {show: false}
+                                        }
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    {
+                        name: 'MA5',
+                        type: 'line',
+                        data: calculateMA(5),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: 'MA10',
+                        type: 'line',
+                        data: calculateMA(10),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: 'MA20',
+                        type: 'line',
+                        data: calculateMA(20),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: 'MA30',
+                        type: 'line',
+                        data: calculateMA(30),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: 'MA60',
+                        type: 'line',
+                        data: calculateMA(60),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    },
+                    {
+                        name: 'MA120',
+                        type: 'line',
+                        data: calculateMA(120),
+                        smooth: true,
+                        showAllSymbol: false,
+                        lineStyle: {
+                            normal: {opacity: 0.5}
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        }
+
+        function draw_short_trend_chart(data) {
+            $("#short_trend_chart").sparkline(data, {
+                type: "line",
+                width: "95%",
+                height: "40",
+                spotColor: false,
+                spotRadius: 3,
+                lineColor: "#adadad",
+                fillColor: "#f4fce1"
+            })
+        }
+
+        function show_today_data(bar, basic, one_year) {
+            var fontcolor = ''
+            var html_left = ''
+            if (bar.change > 0) {
+                fontcolor = 'red'
+                html_left += "<span style=\"color:" + fontcolor + "\">" + bar.close + "<i class=\"mdi mdi-arrow-up-bold\"></i><div style=\"float:right;font-size: 15px\">" + bar.change + "<br/>" + bar.pct_chg.toFixed(2) + "%</div></span>"
+
+            } else if (bar.change < 0) {
+                fontcolor = 'green'
+                html_left += "<span style=\"color:" + fontcolor + "\">" + bar.close + "<i class=\"mdi mdi-arrow-down-bold\"></i><div style=\"float:right;font-size: 15px\">" + bar.change + "<br/>" + bar.pct_chg.toFixed(2) + "%</div></span>"
+            } else {
+                fontcolor = '#00A2C7'
+                html_left += "<span style=\"color:" + fontcolor + "\">" + bar.close + "<i class=\"mdi mdi-arrow-up-bold\"></i><div style=\"float:right;font-size: 15px\">" + bar.change + "<br/>" + bar.pct_chg.toFixed(2) + "%</div></span>"
+            }
+
+            var html = "<table style=\"width: 100%;height: 100%\">\n" +
+                "                                <tbody>\n" +
+                "                                <tr>";
+            html += "<td>涨幅：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.pct_chg + "</span></td>"
+            html += "<td>今开：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.open + "</span></td>"
+            html += "<td>换手率：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + basic.turnover_rate + "</span></td>"
+            html += "<td>成交量：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.vol + "</span></td></tr><tr>"
+            html += "<td>今收：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.close + "</span></td>"
+            html += "<td>最高：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.high + "</span></td>"
+            html += "<td>市盈率：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + basic.pe + "</span></td>"
+            html += "<td>成交额：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.amount + "</span></td></tr><tr>"
+            html += "<td>昨收：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.pre_close + "</span></td>"
+            html += "<td>最低：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + bar.low + "</span></td>"
+            html += "<td>市净率：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + basic.pb + "</span></td>"
+            html += "<td>流通值：<span style=\"color: " + fontcolor + ";font-weight: bold\">" + basic.circ_mv + "</span></td>"
+            html += "</tr>\n" +
+                "                                </tbody>\n" +
+                "                            </table>"
+
+            var html_slider = "<span class=\"irs\" style=\"width:90%;margin:0 auto;\"><span class=\"irs\"><span\n" +
+                "                                                class=\"irs-line\" tabindex=\"-1\"><span class=\"irs-line-left\"></span><span\n" +
+                "                                                class=\"irs-line-mid\"></span><span\n" +
+                "                                                class=\"irs-line-right\"></span></span><span\n" +
+                "                                                class=\"irs-min\">"
+            html_slider += one_year.min + "</span> <span class=\"irs-max\">" + one_year.max
+            var position = (bar.close - one_year.min) / (one_year.max - one_year.min) * 100
+            html_slider += "</span> <span class=\"irs-from\" style=\"left: 42%;\">" + position.toFixed(2) + "%</span> </span><span class=\"irs-slider\" style=\"left: " + position * 0.95 + "%;\"></span> </span>"
+
+            $("#today_data").html(html)
+            $("#today_data_left").html(html_left)
+            $("#one_year_slider").html(html_slider)
+
+        }
+
+        function show_compay_concept(data) {
+            var area = data.area.join('/');
+            var industry = data.industry.join('/');
+            var concept = data.concept.join('/');
+            $("#area").html(area)
+            $("#industry").html(industry)
+            $("#concept").html(concept)
+        }
+
+        function draw_radar_chart() {
+            var radar_chart = echarts.init(document.getElementById('stock_radar'));
+            var option = {
+                title: [
+                    {
+                        text: '{{ stock.name }}综合分析({{ '%s/%s/%s'| format(date[0:4],date[4:6],date[6:8]) }})',
+                    },
+                    {
+                        text: '综合得分',
+                        left: '79%',
+                        top: '18%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#000000',
+                            fontSize: 18
+                        }
+                    },
+                    {
+                        text: '41.2',
+                        left: '79%',
+                        top: '21%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#336633',
+                            fontSize: 44
+                        }
+                    },
+                    {
+                        text: '打败了',
+                        left: '71%',
+                        top: '29%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#000000',
+                            fontSize: 12
+                        }
+                    },
+                    {
+                        text: '35.7%',
+                        left: '80%',
+                        top: '27.5%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#336633',
+                            fontSize: 28
+                        }
+                    },
+                    {
+                        text: '的股票',
+                        left: '89%',
+                        top: '29%',
+                        textAlign: 'center',
+                        textStyle: {
+                            color: '#000000',
+                            fontSize: 12
+                        }
+                    }
+                ],
+                toolbox: {
+                    show: true,
+                    feature: {
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                tooltip: {},
+                legend: {
+                    top: '60px',
+                    data: ['今日得分', '前1日', '前2日', '前3日', '前4日']
+                },
+                radar: {
+                    name: {
+                        textStyle: {
+                            color: '#c23531',
+                            fontSize: 16
+                        }
+                    },
+                    center: ['50%', '58%'],
+                    indicator: [
+                        {name: '技术面', max: 100},
+                        {name: '估值面', max: 100},
+                        {name: '资金面', max: 100},
+                        {name: '持仓面', max: 100},
+                        {name: '板块面', max: 100}
+                    ],
+                    triggerEvent: true
+                },
+                series: [{
+                    name: '',
+                    type: 'radar',
+                    color: ['#c23531', '#99CCFF', '#6699CC', '#336699', '#003366'],
+                    data: [
+                        {
+                            symbolSize: 10,
+                            areaStyle: {
+                                normal: {
+                                    color: 'rgba(255, 153, 153, 0.4)'
+                                }
+                            },
+                            lineStyle: {
+                                normal: {
+                                    type: 'solid',
+                                    color: '#CC3333',
+                                    width: 4
+                                }
+                            },
+                            label: {
+                                normal: {
+                                    show: true,
+                                    fontSize: 16,
+                                    formatter: function (params) {
+                                        return params.value;
+                                    }
+                                }
+                            },
+                            value: [28.8, 52.8, 59.4, 30.3, 29.9],
+                            name: '今日得分'
+                        },
+                        {
+                            symbol: 'roundRect',
+                            symbolSize: 4,
+                            lineStyle: {
+                                normal: {
+                                    type: 'dashed',
+                                    width: 1
+                                }
+                            },
+                            value: [35.9, 53.9, 31, 37,],
+                            name: '前4日'
+                        },
+                        {
+                            symbol: 'roundRect',
+                            symbolSize: 6,
+                            lineStyle: {
+                                normal: {
+                                    type: 'dashed',
+                                    width: 2
+                                }
+                            },
+                            value: [37.1, 53.7, 49.3, 37.2, 43.2],
+                            name: '前3日'
+                        },
+                        {
+                            symbol: 'roundRect',
+                            symbolSize: 8,
+                            lineStyle: {
+                                normal: {
+                                    type: 'dashed',
+                                    width: 3
+                                }
+                            },
+                            value: [52.1, 53.5, 51.8, 32.9, 43.6],
+                            name: '前2日'
+                        },
+                        {
+                            symbol: 'roundRect',
+                            symbolSize: 10,
+                            lineStyle: {
+                                normal: {
+                                    type: 'dashed',
+                                    width: 4
+                                }
+                            },
+                            value: [42.8, 52.8, 54.2, 30, 27.3],
+                            name: '前1日'
+                        }
+                    ]
+                }]
+            };
+            radar_chart.setOption(option);
+        }
+
+
+    </script>
+{% endblock %}

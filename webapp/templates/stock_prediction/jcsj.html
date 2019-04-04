@@ -1,0 +1,673 @@
+{% extends "stock_base.html" %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card-box">
+                <h4 class="header-title m-t-0 m-b-30">分析项目</h4>
+
+                <ul class="nav nav-pills navtab-bg nav-justified">
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            <i class="dripicons-bell" style="font-size: 25px"></i><br/>综合研判
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            走势预测
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            股票估值
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            资金流向
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            筹码分布
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            规则统计
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            全局指南
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            财务指标
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            公告新闻
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            研报评级
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for('main.jcsj') }}" aria-expanded="false" class="nav-link  active"><i
+                                class="dripicons-document"
+                                style="font-size: 25px"></i><br/>
+                            基础数据
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            股吧聚合
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="" aria-expanded="false" class="nav-link">
+                            行为分析
+                        </a>
+                    </li>
+                </ul>
+            </div> <!-- end card-box-->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                 aria-orientation="vertical">
+                <a class="nav-link active show mb-2" id="gsgk-tab" data-toggle="pill" style="text-align: center"
+                   role="tab" aria-controls="gsgk" href="#gsgk"
+                   aria-selected="true">
+                    公司概况</a>
+                <a class="nav-link mb-2" id="fxcz-tab" data-toggle="pill" role="tab"
+                   style="text-align: center"
+                   aria-controls="fxcz" href="#fxcz"
+                   aria-selected="false">
+                    发行筹资</a>
+                <a class="nav-link mb-2" id="fhpg-tab" data-toggle="pill" style="text-align: center"
+                   role="tab" aria-controls="fhpg" href="#fhpg"
+                   aria-selected="false">
+                    分红配股</a>
+                <a class="nav-link mb-2" id="ggry-tab" data-toggle="pill" style="text-align: center"
+                   role="tab" aria-controls="ggry" href="#ggry"
+                   aria-selected="false">
+                    高管人员</a>
+                <a class="nav-link mb-2" id="sdgd-tab" data-toggle="pill" style="text-align: center"
+                   role="tab" aria-controls="sdgd" href="#sdgd"
+                   aria-selected="false">
+                    十大股东</a>
+                <a class="nav-link mb-2" id="zczd-tab" data-toggle="pill" style="text-align: center"
+                   role="tab" aria-controls="zczd" href="#zczd"
+                   aria-selected="false">
+                    章程制度</a>
+            </div>
+        </div>
+        <div class="col-9">
+            <div class="tab-content pt-0">
+                <div class="card-box tab-pane fade active show" id="gsgk" role="tabpanel" aria-labelledby="gsgk-tab">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">公司全称：</th>
+                            <td colspan="3" id="gsqc"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">公司网址：</th>
+                            <td colspan="3" id="gswz">/td>
+                        </tr>
+                        <tr>
+                            <th scope="row">英文名称:</th>
+                            <td id="ywmc"></td>
+                            <th scope="row">公司简称：</th>
+                            <td id="gsjc"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">注册地址：</th>
+                            <td colspan="3" id="zcdz"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">法定代表人:</th>
+                            <td id="fddbr"></td>
+                            <th scope="row">公司董秘：</th>
+                            <td id="gsdm"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">注册资本(万元):</th>
+                            <td id="zczb"></td>
+                            <th scope="row">行业种类：</th>
+                            <td id="hyzl"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">公司电话:</th>
+                            <td id="gsdh"></td>
+                            <th scope="row">公司传真：</th>
+                            <td id="gscz"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">招股时间:</th>
+                            <td id="zgsj"></td>
+                            <th scope="row">上市时间：</th>
+                            <td id="sssj"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行数量(万股):</th>
+                            <td id="fxsl"></td>
+                            <th scope="row">发行方式：</th>
+                            <td id="fxfs"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行价格(元):</th>
+                            <td id="fxjg"></td>
+                            <th scope="row">发行市盈率(倍)：</th>
+                            <td id="fxsyl"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">主承销商：</th>
+                            <td colspan="3">
+                                <div class="row" style="align-items:center;">
+                                    <div style="margin-left: 15px" id="zcxs"></div>
+                                    <div class="btn-group" style="margin-left: 10px">
+                                        <button type="button" class="btn btn-light dropdown-toggle"
+                                                data-toggle="dropdown" aria-expanded="false">同承销商<span
+                                                class="caret"></span></button>
+                                        <div class="dropdown-menu" id="tcxs">
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">上市推荐人:</th>
+                            <td id="sstjr"></td>
+                            <th scope="row">保荐机构：</th>
+                            <td id="bjjg"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-box tab-pane fade" id="fxcz" role="tabpanel" aria-labelledby="fxcz-tab">
+                    <table class="table table-bordered mb-0">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <th scope="row">发行类型:</th>
+                            <td colspan="3" id="fxlx"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行起始日:</th>
+                            <td colspan="3" id="fxqsr"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行性质:</th>
+                            <td id="fxxz"></td>
+                            <th scope="row">发行股票种类:</th>
+                            <td id="fxgpzl"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行方式:</th>
+                            <td colspan="3" id="fxfs"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行公众股数量(万股):</th>
+                            <td colspan="3" id="fxgzgsl"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">人民币发行价格(元):</th>
+                            <td colspan="3" id="rmbfxjg"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">外币发行价格(元):</th>
+                            <td colspan="3" id="wbfxjg"></td>
+
+                        </tr>
+                        <tr>
+                            <th scope="row">实际募集资金(万元):</th>
+                            <td colspan="3" id="sjmjzj"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">实际发行费用(万元):</th>
+                            <td colspan="3" id="sjfxfy"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">发行市盈率(倍):</th>
+                            <td colspan="3" id="fxsyl"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">上网定价中签率(%):</th>
+                            <td colspan="3" id="swdjzql"></td>
+                        </tr>
+                        <tr>
+                            <th scope="row">二级配售中签率(%):</th>
+                            <td colspan="3" id="ejpszql"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-box tab-pane fade" id="fhpg" role="tabpanel" aria-labelledby="fxcz-tab">
+                    <div class="col-3" style="margin-left: 750px">
+                        <ul class="nav nav-tabs tabs-bordered nav-justified">
+                            <li class="nav-item">
+                                <a href="#fh" data-toggle="tab" aria-expanded="true" class="nav-link active">
+                                    分红
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#pg" data-toggle="tab" aria-expanded="false" class="nav-link">
+                                    配股
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div class="tab-pane  active" id="fh">
+                            <table class="table mb-0">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>分红年度</th>
+                                    <th>分红方案</th>
+                                    <th>股权登记日</th>
+                                    <th>除权基准日</th>
+                                    <th>红股上市日</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tb_fh">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tab-pane" id="pg">
+                            <p>Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo,
+                                rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis
+                                pretium. Integer tincidunt.Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate
+                                eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac,
+                                enim.</p>
+                            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget
+                                dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes,
+                                nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis,
+                                sem. Nulla consequat massa quis enim.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-box tab-pane fade" id="ggry" role="tabpanel" aria-labelledby="fxcz-tab"
+                     style="height: 1000px;width:1050px">
+                </div>
+                <div class="card-box tab-pane fade" id="sdgd" role="tabpanel" aria-labelledby="fxcz-tab">
+                    <table class="table  table-hover fullwidth" style="text-align: center;">
+                        <thead>
+                        <tr>
+                            <th style="width: 80px;">截止时间</th>
+                            <th >股东名称</th>
+                            <th style="width: 100px;">持股数量(股)</th>
+                            <th style="width: 100px;">持股比例</th>
+                            <th style="width: 100px;">股份性质</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tb_sdgd">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-box tab-pane fade" id="zczd" role="tabpanel" aria-labelledby="fxcz-tab">
+                    <table class="table mb-0">
+                        <thead class="thead-light">
+                        <tr>
+                            <th>#</th>
+                            <th>标题</th>
+                            <th>公告日期</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td style="text-align: left;"><a
+                                    href="http://www.cninfo.com.cn/finalpage/2014-07-16/1200056142.PDF" target="_blank">平安银行：资本管理规划（2014年-2016年）</a>
+                            </td>
+                            <td>2014/07/16</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $.ajax({
+                type: 'POST',
+                url: '{{url_for("main.api_get_stock_jcsj_gsgk")}}',
+                data: {
+                    'stock': '000001.SZ',
+                },
+                dataType: 'json',
+                success: function (data_1) {
+                    $("#gsqc").text(data_1['full_name']);
+                    $("#gswz").text(data_1['website']);
+                    $("#ywmc").text(data_1['eng_name']);
+                    $("#gsjc").text(data_1['short_name']);
+                    $("#zcdz").text(data_1['address']);
+                    $("#fddbr").text(data_1['legal_representative']);
+                    $("#gsdm").text(data_1['boardchairmen']);
+                    $("#zczb").text(data_1['regist_captial']);
+                    $("#hyzl").text(data_1['industry']);
+                    $("#gsdh").text(data_1['phone']);
+                    $("#gscz").text(data_1['fax']);
+                    $("#zgsj").text(data_1['raise_date']);
+                    $("#sssj").text(data_1['exch_date']);
+                    $("#fxsl").text(data_1['pub_num']);
+                    $("#fxfs").text(data_1['pub_style']);
+                    $("#fxjg").text(data_1['pub_price']);
+                    $("#fxsyl").text(data_1['pub_ttm']);
+                    $("#zcxs").text(data_1['main_underwriter']);
+                    $("#ssbjr").text(data_1['exch_sponsors']);
+                    $("#bjjg").text(data_1['sponsor_agency']);
+                    var show_num = 0;
+                    for (var i in data_1['to_underwriter']) {
+                        if (show_num < 4) {
+                            var a = "<a class='dropdown-item' href='#'>" + data_1['to_underwriter'][i] + "</a>";
+                            $("#tcxs").append(a);
+                            show_num += 1
+                        }
+                    }
+                    var b = "<a class='dropdown-item'>...</a>";
+                    $("#tcxs").append(b);
+                    var c = "<a class='dropdown-item' style='color:red'>总共" + data_1['to_underwriter_num'] + "家</a>";
+                    $("#tcxs").append(c);
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '{{url_for("main.api_get_stock_jcsj_fxcz")}}',
+                data: {
+                    'stock': '000001.SZ',
+                },
+                dataType: 'json',
+                success: function (data_1) {
+                    $("#fxlx").text(data_1[0]['pub_type']);
+                    $("#fxqsr").text(data_1[0]['pub_date']);
+                    $("#fxxz").text(data_1[0]['pub_character']);
+                    $("#fxgpzl").text(data_1[0]['pub_stock_type']);
+                    $("#fxfs").text(data_1[0]['pub_style']);
+                    $("#fxgzgsl").text(data_1[0]['pub_stock_num'] / 10000);
+                    $("#rmbfxjg").text(data_1[0]['pub_price_cns']);
+                    $("#wbfxjg").text(data_1[0]['pub_price_fore']);
+                    $("#sjmjzj").text(data_1[0]['act_fund'] / 10000);
+                    $("#sjfxfy").text(data_1[0]['act_cost']);
+                    $("#fxsyl").text(data_1[0]['pub_ttm']);
+                    $("#swdjzql").text(data_1[0]['lot_rate_oniline_pricing']);
+                    $("#ejpszql").text(data_1[0]['bid_rate_sec_distribution']);
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '{{url_for("main.api_get_stock_jcsj_fh")}}',
+                data: {
+                    'stock': '000001.SZ',
+                },
+                dataType: 'json',
+                success: function (data_1) {
+                    var num = 1;
+                    for (var i in data_1['index']) {
+                        var tr = "<tr><td>" + num + "</td><td>" + data_1['bonus_year'][i] + "</td><td style='text-align: left;'>" + data_1['bonus_plan'][i] + "</td><td>" + data_1['date_equity_regist'][i] + "</td><td>" + data_1['date_exclusion'][i] + "</td><td>" + data_1['date_bonus_shares'][i] + "</td></tr>";
+                        $("#tb_fh").append(tr);
+                        num += 1;
+                    }
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '{{url_for("main.api_get_stock_sdgd")}}',
+                data: {
+                    'stock': '600618.SH',
+                    {#'stock': '000001.SZ',#}
+                },
+                dataType: 'json',
+                success: function (data_1) {
+                    for (var i in data_1) {
+                        if (i != "tqdgd") {
+                            for (var a = 0; a < data_1[i]['name'].length; a++) {
+                                if (data_1['tqdgd'].hasOwnProperty(data_1[i]['name'][a])) {
+                                    if (a == 0) {
+                                        console.log(data_1[i]['name'].length);
+                                        var tr = "<tr><td rowspan='" + data_1[i]['name'].length + "'>" + i + "</td><td style='text-align: left;'><div style='line-height:34px;'>(" + (a + 1) + ")" + data_1[i]['name'][a] + "</div><div class='btn-group' style='margin-left:10px;'><button type='button' class='btn btn-theme dropdown-toggle' data-toggle='dropdown'>同期大股东 <span class='caret'></span></button><ul id='tqdgd_"+data_1[i]['name'][a]+"_"+i+"' class='dropdown-menu' role='menu'></ul></div></td><td>" + data_1[i]['num'][a] + "</td><td>" + data_1[i]['ratio'][a] + "</td><td>" + data_1[i]['type'][a] + "</td></tr>";
+                                    } else {
+                                        var tr = "<tr><td style='text-align: left;'><div style='line-height:34px;'>(" + (a + 1) + ")" + data_1[i]['name'][a] + "</div><div id='tqdgd_" + data_1[i]['name'][a] + "' class='btn-group' style='margin-left:10px;'><button type='button'class='btn btn-theme dropdown-toggle' data-toggle='dropdown'>同期大股东 <span class='caret'></span></button><ul id='tqdgd_"+data_1[i]['name'][a]+"_"+i+"' class='dropdown-menu' role='menu'></ul></div></td><td>" + data_1[i]['num'][a] + "</td><td>" + data_1[i]['ratio'][a] + "</td><td>" + data_1[i]['type'][a] + "</td></tr>"
+                                    }
+                                    $("#tb_sdgd").append(tr);
+                                    for (var gd in data_1['tqdgd'][data_1[i]['name'][a]]) {
+                                        var tr_1 = "<li><a target='_blank'>" + data_1['tqdgd'][data_1[i]['name'][a]][gd] + "</a></li>";
+                                        var tqdgd = document.getElementById('tqdgd_' + data_1[i]['name'][a]+"_"+i);
+                                        $(tqdgd).append(tr_1);
+                                        console.log(data_1['tqdgd'][data_1[i]['name'][a]][gd])
+                                    }
+                                } else {
+                                    if (a == 0) {
+                                        var tr = "<tr><td rowspan='" + data_1[i]['name'].length + "'>" + i + "</td><td style='text-align: left;'>（" + (a+1) + "）" + data_1[i]['name'][a] + "</td><td>" + data_1[i]['num'][a] + "</td><td>" + data_1[i]['ratio'][a] + "</td><td>" + data_1[i]['type'][a] + "</td></tr>";
+                                    } else {
+                                        var tr = "<tr><td style='text-align: left;'>（" + (a + 1) + "）" + data_1[i]['name'][a] + "</td><td>" + data_1[i]['num'][a] + "</td><td>" + data_1[i]['ratio'][a] + "</td><td>" + data_1[i]['type'][a] + "</td></tr>";
+                                    }
+                                    $("#tb_sdgd").append(tr);
+                                }
+                            }
+
+                        }
+                    }
+                }
+            });
+
+
+            var myChart = echarts.init(document.getElementById('ggry'));
+            myChart.hideLoading();
+            option = {
+                title: {
+                    text: ''
+                },
+                grid: {
+                    y1: 0
+                },
+                tooltip: {},
+                animationDurationUpdate: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                label: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 12
+                        },
+                    }
+                },
+                legend: {
+                    x: "center",
+                    show: false,
+                    data: ["夫妻", "战友", '亲戚']
+                },
+                series: [
+
+                    {
+                        type: 'graph',
+                        layout: 'force',
+                        symbolSize: 45,
+                        focusNodeAdjacency: true,
+                        roam: true,
+                        categories: [{
+                            name: '夫妻',
+                            itemStyle: {
+                                normal: {
+                                    color: "#009800",
+                                }
+                            }
+                        }, {
+                            name: '战友',
+                            itemStyle: {
+                                normal: {
+                                    color: "#4592FF",
+                                }
+                            }
+                        }, {
+                            name: '亲戚',
+                            itemStyle: {
+                                normal: {
+                                    color: "#3592F",
+                                }
+                            }
+                        }],
+                        label: {
+                            normal: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: 12
+                                },
+                            }
+                        },
+                        force: {
+                            repulsion: 1000
+                        },
+                        edgeSymbolSize: [4, 50],
+                        edgeLabel: {
+                            normal: {
+                                show: true,
+                                textStyle: {
+                                    fontSize: 10
+                                },
+                                formatter: "{c}"
+                            }
+                        },
+                        data: [{
+                            name: '徐贱云',
+                            draggable: true,
+                        }, {
+                            name: '冯可梁',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '邓志荣',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '李荣庆',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '郑志勇',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '赵英杰',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '王承军',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '陈卫东',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '邹劲松',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '赵成',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '陈现忠',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '陶泳',
+                            category: 1,
+                            draggable: true,
+                        }, {
+                            name: '王德福',
+                            category: 1,
+                            draggable: true,
+                        }],
+                        links: [{
+                            source: 0,
+                            target: 1,
+                            category: 0,
+                            value: '夫妻'
+                        }, {
+                            source: 0,
+                            target: 2,
+                            value: '子女'
+                        }, {
+                            source: 0,
+                            target: 3,
+                            value: '夫妻'
+                        }, {
+                            source: 0,
+                            target: 4,
+                            value: '父母'
+                        }, {
+                            source: 1,
+                            target: 2,
+                            value: '表亲'
+                        }, {
+                            source: 0,
+                            target: 5,
+                            value: '朋友'
+                        }, {
+                            source: 4,
+                            target: 5,
+                            value: '朋友'
+                        }, {
+                            source: 2,
+                            target: 8,
+                            value: '叔叔'
+                        }, {
+                            source: 0,
+                            target: 12,
+                            value: '朋友'
+                        }, {
+                            source: 6,
+                            target: 11,
+                            value: '爱人'
+                        }, {
+                            source: 6,
+                            target: 3,
+                            value: '朋友'
+                        }, {
+                            source: 7,
+                            target: 5,
+                            value: '朋友'
+                        }, {
+                            source: 9,
+                            target: 10,
+                            value: '朋友'
+                        }, {
+                            source: 3,
+                            target: 10,
+                            value: '朋友'
+                        }, {
+                            source: 2,
+                            target: 11,
+                            value: '同学'
+                        }],
+                        lineStyle: {
+                            normal: {
+                                opacity: 0.9,
+                                width: 1,
+                                curveness: 0
+                            }
+                        }
+                    }
+                ]
+            };
+            myChart.setOption(option);
+        })
+
+
+    </script>
+{% endblock %}

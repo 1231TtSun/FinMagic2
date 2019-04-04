@@ -1,0 +1,293 @@
+{% extends "stock_prediction/stock_prediction_base.html" %}
+{% block page_container %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-2">
+            <div class="row">
+                   <div class="nav flex-column nav-pills nav-pills-tab" id="v-pills-tab" role="tablist"
+                     aria-orientation="vertical">
+                                        <a class="nav-link mb-2" href="{{url_for('stock_prediction.zycwzb')}} ">
+                        主要财务指标</a>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.ylnl')}}">
+                        盈利能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.chnl')}}" >
+                        偿还能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.cznl')}}">
+                        成长能力</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.yynl')}}" >
+                        运营能力</a>
+                     <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link mb-2"  href="{{url_for('stock_prediction.lrbzy')}}">
+                        利润表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.zcfzbzy')}}" >
+                        资产负债表摘要</a>
+                    <a class="nav-link mb-2"
+                       href="{{url_for('stock_prediction.xjjlbzy')}}" >
+                        现金流量表摘要</a>
+                    <li class="nav-link mb-2" id="v-pills-messages-tab" data-toggle="pill"
+                       href="#v-pills-messages" role="tab" aria-controls="v-pills-messages"
+                       aria-selected="false">
+                        </li>
+                    <a class="nav-link active show mb-2"  href="{{url_for('stock_prediction.cwbg')}}">
+                        财务报告</a>
+                </div>
+            </div> <!-- end row-->
+        </div>
+            <div class="col-8">
+                <div class="card-box" style="width: 70%" >
+                <ul class="nav nav-pills navtab-bg nav-justified" >
+                   <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg')}}" aria-expanded="false" class="nav-link active">
+                            综合指标
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_lrb')}}" aria-expanded="false" class="nav-link">
+                            利润表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_zcfzb')}}" aria-expanded="false" class="nav-link">
+                            资产负债表
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{url_for('stock_prediction.cwbg_xjllb')}}" aria-expanded="false" class="nav-link">
+                            现金流量表
+                        </a>
+                    </li>
+                </ul>
+                </div>
+            <div class="row">
+                <div class="col-8"></div>
+                <div class="col-4">
+                    <div height="100px">
+                        <ul class="nav nav-pills navtab-bg nav-justified">
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb')}}"
+                                   class="nav-link active">按报告期</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{url_for('stock_prediction.zycwzb_year')}}"
+                                   class="nav-link">按年度</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane" id="home1"></div>
+                            <div class="tab-pane show active" id="profile1"></div>
+                            <div class="tab-pane" id="messages1"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+{#<div id="container" style="height: 800px;width: 100%;float: right">#}
+    <form>
+        <table id="table-zhzb" width="100%" align="left" border="0">
+            <td style="width: 28%">
+                <table>
+            <tr id="date">
+                <td colspan="2" style="border: #fff solid 1px;height:8px;background: rgba(249,191,190,0.74);padding: 10px 10px;font-size: 14px;text-align: right;width: 27%"><b>项目/报告期</b></td>
+            <tr>
+                <td rowspan="4" style="background: rgba(249,191,190,0.74);border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: center;width:1%">
+                    投资与收益
+                </td>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right;width:23%">
+                    基本每股收益（元）
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">每股净资产（元）</td>
+
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">扣除后每股收益（元）</td>
+
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">净资产收益率（%）</td>
+
+            </tr>
+            <tr>
+                <td rowspan="4" style="background: rgba(249,191,190,0.74);border:#fff solid 1px;padding: 9px 8px;font-size: 14px;text-align: center">
+                    偿债能力
+                </td>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    流动比率（倍）
+                </td>
+
+            </tr>
+              <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">速动比率（倍）</td>
+
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 5px;font-size: 14px;text-align: right">应收账款周转率（次）</td>
+
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">资产负债率（%）</td>
+
+            </tr>
+            <tr>
+                <td rowspan="2" style="background: rgba(249,191,190,0.74);border:#fff solid 1px;padding: 5px 5px;font-size: 13px;text-align: center">
+                    盈利能力
+                </td>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    净利润率（%）
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">总资产报酬率（%）</td>
+            </tr>
+            <tr>
+                <td rowspan="3" style="background: rgba(249,191,190,0.74);border:#fff solid 1px;padding: 10px 8px;font-size: 14px;text-align: center">
+                    经营能力
+                </td>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">
+                    存货周转率
+                </td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">固定资产周转率</td>
+            </tr>
+             <tr>
+                <td style="background: #f8e5df;height:8px;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;text-align: right">总资产周转率</td>
+            </tr>
+             <tr>
+                <td rowspan="2" style="background: rgba(249,191,190,0.74);border:#fff solid 1px;padding: 5px 5px;font-size: 14px;text-align: center">
+                    资产构成
+                </td>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">
+                    净资产比率（%）
+                </td>
+            </tr>
+            <tr>
+                <td style="background: #f8e5df;border:#fff solid 1px;padding: 10px 10px;font-size: 14px;height:8px;text-align: right">固定资产比率（%）</td>
+            </tr>
+                </table></td>
+             <td style="width: 5%">
+                 <table id="111" ></table></td>
+             <td style="width: 5%">
+                 <table id="222" ></table></td>
+            <td style="width: 5%">
+                <table id="333"></table></td>
+            <td style="width: 5%">
+                <table id="444" ></table></td>
+            <td style="width: 5%">
+                <table id="555" ></table></td>
+            <td style="width: 5%">
+                <table id="666"></table></td>
+{#            <td style="width: 5%">#}
+{#                <table id="777"></table></td>#}
+{#            <td style="width: 5%">#}
+{#                <table id="888"></table></td>#}
+        </table>
+    </form>
+</div>
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+    $(function () {
+        $.ajax({
+            url:'{{url_for("stock_prediction.api_cwbg_zhzb")}}',
+            type:"get",
+            data: {code: stock, date: date},
+            dataType: "json",
+            success:function (data_1) {
+                var obj=eval(data_1[1]);
+                var tbody=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj).each(function(index){
+                    var val=obj[index];
+                    var tr=$('<tr style="height:0px"></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody.append(tr);
+                });
+                $('#111').replaceWith(tbody)
+
+                var obj2=eval(data_1[2]);
+                var tbody2=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj2).each(function(index){
+                    var val=obj2[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody2.append(tr);
+                });
+                $('#222').replaceWith(tbody2)
+
+                var obj3=eval(data_1[3]);
+                var tbody3=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj3).each(function(index){
+                    var val=obj3[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody3.append(tr);
+                });
+                $('#333').replaceWith(tbody3)
+
+                var obj4=eval(data_1[4]);
+                var tbody4=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj4).each(function(index){
+                    var val=obj4[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody4.append(tr);
+                });
+                $('#444').replaceWith(tbody4)
+
+                var obj5=eval(data_1[5]);
+                var tbody5=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj5).each(function(index){
+                    var val=obj5[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody5.append(tr);
+                });
+                $('#555').replaceWith(tbody5)
+
+                var obj6=eval(data_1[6]);
+                var tbody6=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj6).each(function(index){
+                    var val=obj6[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody6.append(tr);
+                });
+                $('#666').replaceWith(tbody6)
+
+                var obj7=eval(data_1[7]);
+                var tbody7=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj7).each(function(index){
+                    var val=obj7[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody7.append(tr);
+                });
+                $('#777').replaceWith(tbody7)
+
+                var obj8=eval(data_1[8]);
+                var tbody8=$('<tbody style="margin-left:90px"></tbody>');
+                $(obj8).each(function(index){
+                    var val=obj8[index];
+                    var tr=$('<tr></tr>');
+                    tr.append('<td style="background: #f9f3f1;border:#fff solid 0.5px;width: 9px;height:8 px;padding: 10px 10px;font-size: 14px;text-align: center">'+val+'</td>');
+                    tbody8.append(tr);
+                });
+
+                $('#888').replaceWith(tbody8)
+
+
+            }
+        });
+    });
+</script>
+
+{% endblock %}
