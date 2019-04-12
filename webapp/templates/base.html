@@ -283,11 +283,11 @@
                             <li class="has-submenu">
                                 <a href="ui-buttons.html"><i class="mdi mdi-orbit"></i> 场内动态全景</a>
                                 <ul class="submenu">
-                                    <li><a href="/industry_analysis/zjlxqj">资金流向全景</a></li>
-                                    <li><a href="/industry_analysis/jyhyqj">交易活跃全景</a></li>
-                                    <li><a href="/industry_analysis/zsbhqj">走势变化全景</a></li>
-                                    <li><a href="/industry_analysis/szfbqj">市值分布全景</a></li>
-                                    <li><a href="/industry_analysis/dtgzqj">动态估值全景</a></li>
+                                    <li><a href="{{ url_for("industry_analysis.panorama_capital_flow") }}">资金流向全景</a></li>
+                                    <li><a href="{{ url_for("industry_analysis.panorama_active_trading") }}">交易活跃全景</a></li>
+                                    <li><a href="{{ url_for("industry_analysis.panorama_trend_changes") }}">走势变化全景</a></li>
+                                    <li><a href="{{ url_for("industry_analysis.panorama_market_value_distribution") }}">市值分布全景</a></li>
+                                    <li><a href="{{ url_for("industry_analysis.panorama_dynamic_valuation") }}">动态估值全景</a></li>
                                 </ul>
                             </li>
                             <li class="has-submenu">
@@ -298,10 +298,10 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="/industry_analysis/cwzbbj"><i class="mdi mdi-finance"></i> 财务指标比较</a>
+                                <a href="{{ url_for("industry_analysis.comparison_financial_indicators") }}"><i class="mdi mdi-finance"></i> 财务指标比较</a>
                             </li>
                             <li>
-                                <a href="/industry_analysis/hqsjbj"><i class="mdi mdi-database"></i> 行情数据比较</a>
+                                <a href="{{ url_for("industry_analysis.market_data_comparison") }}"><i class="mdi mdi-database"></i> 行情数据比较</a>
                             </li>
                         </ul>
                     </li>
